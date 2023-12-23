@@ -1,0 +1,51 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  --main-grey: #e7e5e4;
+  --text-size: 1rem;
+  --main-color: #ffffff;
+  --global-margin-top: 36px;
+}
+
+body {
+  font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+li,
+span {
+  list-style-type: none;
+  font-size: 1.2rem;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(11, 50px); /* Adjust width as needed */
+  grid-template-rows: repeat(10, 50px); /* Adjust height as needed */
+}
+
+.cell,
+.no-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cell {
+  width: 50px; /* Adjust width as needed */
+  height: 50px; /* Adjust height as needed */
+  background-color: #ddd; /* Adjust background color as needed */
+  border: 1px solid #888; /* Adjust border as needed */
+}
