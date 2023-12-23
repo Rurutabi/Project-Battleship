@@ -1,7 +1,4 @@
-const hello = () => {
-  return "hello";
-};
+import { Ship } from "./ship.js";
+import { gameboard } from "./gameboard.js";
 
-console.log("hello");
-
-module.exports = hello;
+let subMarine = new Ship();
