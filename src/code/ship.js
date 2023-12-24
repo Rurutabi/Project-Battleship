@@ -1,27 +1,20 @@
 export class Ship {
   constructor(shipLength) {
     if (shipLength >= 0) {
-      this.shipLength = shipLength;
+      this.shipLength = Array.from({ length: shipLength }, () => 1);
     } else {
       this.shipLength = -1;
     }
-
-    //inside?
-    this.hits();
   }
 
-  hits() {
-    this.shipLength = this.shipLength - 1;
+  hits(hitValue) {
+    this.shipLength[hitValue] = 0;
+    this.isSunk();
   }
 
   isSunk() {
-    if (this.shipLength < 0) {
-      console.log("Ship destory");
+    if (this.shipLength.every((value) => value === 0)) {
+      this.shipLength = "sunken ship";
     }
   }
 }
-
-const newShip = new Ship(5);
-
-//Outside
-newShip.hits();
