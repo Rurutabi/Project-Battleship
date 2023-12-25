@@ -1,17 +1,18 @@
-import { Ship } from "./ship.js";
+import { Ship } from "../code/ship.js";
 
 export class gameboard {
-  container = document.getElementById("container");
+  // container = document.getElementById("container");
   subMarine = new Ship(2);
   destoryer = new Ship(4);
 
-  //Array board
-  arrayBoard = Array.from({ length: 10 }, () =>
-    Array.from({ length: 10 }, () => "")
-  );
-  constructor() {
-    this.createBoard();
-    console.log(this.arrayBoard);
+  constructor(boradLength) {
+    this.boradLength = this.createArrayboard(boradLength);
+  }
+
+  createArrayboard(boradLength) {
+    return Array.from({ length: boradLength }, () =>
+      Array.from({ length: boradLength }, () => 0)
+    );
   }
 
   //Create user interface
@@ -46,8 +47,31 @@ export class gameboard {
     }
   }
 
-  placeship() {
-    this.arrayBoard.forEach((value, index) => {});
+  //only work horizontally for now
+  placeship(startLocation, ship) {
+    if (startLocation < 0 || startLocation === null)
+      return "Index cant be negative number or null";
+
+    let startRow = this.getRow(startLocation);
+    let startCol = this.getCol(startLocation);
+
+    if (startRow > this.boradLength.length)
+      return "Index is larger than the board";
+
+    if (startCol + ship.shipLength.length <= this.boradLength.length) {
+      //Have to calculate the length between start(col) and shiplength, it should be
+      for (let k = 0; k < ship.shipLength.length; k++) {
+        this.boradLength[startRow][startCol] = ship.shipLength[k];
+        if (startCol <= 10) {
+          startCol++;
+        } else {
+          startRow++;
+          startCol = 0;
+        }
+      }
+    } else {
+      return "out of bound";
+    }
   }
 
   receiveAttack() {}
@@ -58,10 +82,18 @@ export class gameboard {
 
   //Help method
   getRow(index) {
-    return Math.floor(index / numColumns);
+    return Math.floor(index / 10);
   }
 
   getCol(index) {
-    return index % numColumns;
+    return index % 10;
+  }
+
+  isWithinBound(row, col) {
+    if (row > -1 && row < 11 && col > -1 && col < 11) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
