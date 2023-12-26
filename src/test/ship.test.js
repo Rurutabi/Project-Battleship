@@ -1,5 +1,8 @@
 import { Ship } from "../code/ship.js";
 
+beforeAll(() => console.log("Starting Test"));
+afterAll(() => console.log("Ending Test"));
+
 describe("Ship tests.", () => {
   test("if length is empty", () => {
     const myShip = new Ship();
@@ -13,14 +16,14 @@ describe("Ship tests.", () => {
 
   test("check length of ship with positive value", () => {
     const myShip = new Ship(10);
-    expect(myShip.shipLength).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+    expect(myShip.shipLength).toEqual([10, 10, 10, 10, 10, 10, 10, 10, 10, 10]);
   });
 
   test("check if the ship is hitted by bullet", () => {
     const myShip = new Ship(5);
     const hitValue = 5;
     myShip.hits(hitValue);
-    expect(myShip.shipLength).toEqual([1, 1, 1, 1, 1, 0]);
+    expect(myShip.shipLength).toEqual([5, 5, 5, 5, 5, -1]);
   });
 
   test("check if the ship is sunked when all value is 0", () => {

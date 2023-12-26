@@ -3,7 +3,10 @@ import { Ship } from "../code/ship.js";
 export class gameboard {
   // container = document.getElementById("container");
   subMarine = new Ship(2);
-  destoryer = new Ship(4);
+  destoryer = new Ship(3);
+  battleShip = new Ship(4);
+  cruiser = new Ship(5);
+  aircraftCarrier = new Ship(6);
 
   constructor(boradLength) {
     this.boradLength = this.createArrayboard(boradLength);
@@ -59,10 +62,12 @@ export class gameboard {
       return "Index is larger than the board";
 
     if (startCol + ship.shipLength.length <= this.boradLength.length) {
-      //Have to calculate the length between start(col) and shiplength, it should be
+      //Store ship coordinate
       for (let k = 0; k < ship.shipLength.length; k++) {
         this.boradLength[startRow][startCol] = ship.shipLength[k];
         if (startCol <= 10) {
+          ship.shipCoordinate.push(startLocation);
+          startLocation++;
           startCol++;
         } else {
           startRow++;
@@ -74,11 +79,46 @@ export class gameboard {
     }
   }
 
-  receiveAttack() {}
+  receiveAttack(hitLocation) {
+    let hitRow = this.getRow(hitLocation);
+    let hitCol = this.getCol(hitLocation);
+
+    if (this.boradLength[hitRow][hitCol] === 2) {
+      const index = this.getShipCoordinate(this.subMarine, hitLocation);
+      this.subMarine.hits(index);
+    }
+
+    if (this.boradLength[hitRow][hitCol] === 3) {
+      const index = this.getShipCoordinate(this.destoryer, hitLocation);
+      this.destoryer.hits(index);
+    }
+
+    if (this.boradLength[hitRow][hitCol] === 4) {
+      const index = this.getShipCoordinate(this.battleShip, hitLocation);
+      this.battleShip.hits(index);
+    }
+
+    if (this.boradLength[hitRow][hitCol] === 5) {
+      const index = this.getShipCoordinate(this.cruiser, hitLocation);
+      this.cruiser.hits(index);
+    }
+
+    if (this.boradLength[hitRow][hitCol] === 6) {
+      const index = this.getShipCoordinate(this.aircraftCarrier, hitLocation);
+      this.aircraftCarrier.hits(index);
+    }
+
+    this.boradLength[hitRow][hitCol] = -1;
+  }
 
   missedShot() {}
 
   reportSunk() {}
+
+  //Get indexof
+  getShipCoordinate(ship, hitlocation) {
+    return ship.shipCoordinate.indexOf(hitlocation);
+  }
 
   //Help method
   getRow(index) {
