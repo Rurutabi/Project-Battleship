@@ -16,7 +16,7 @@ describe("Testing game board", () => {
     expect(game.boradLength[row]).toEqual([0, 0, 4, 4, 4, 4, 0, 0, 0, 0]);
   });
 
-  test("check if its out of bound", () => {
+  test("its out of bound", () => {
     const index = 59;
     const myShip = new Ship(2);
     const game = new gameboard(10);
@@ -25,23 +25,46 @@ describe("Testing game board", () => {
     expect(returnValue).toBe("out of bound");
   });
 
-  //Might delete this test later
-  test("index too large", () => {
-    const index = 150;
+  test("Ship receive attack", () => {
+    const index = 40;
     const myShip = new Ship(4);
     const game = new gameboard(10);
-    const returnValue = game.placeship(index, myShip);
-
-    expect(returnValue).toBe("Index is larger than the board");
+    const row = game.getRow(index);
+    game.placeship(index, myShip);
+    game.receiveAttack(42, myShip);
+    expect(myShip.shipLength).toEqual([4, 4, -1, 4]);
+    expect(game.boradLength[row]).toEqual([4, 4, -1, 4, 0, 0, 0, 0, 0, 0]);
   });
 
-  //Might delete this test later
-  test("negative index", () => {
-    const index = null;
+  test("Sunken Ship?", () => {
+    const index = 40;
+    const myShip = new Ship(2);
+    const game = new gameboard(10);
+    game.placeship(index, myShip);
+    game.receiveAttack(40, myShip);
+    game.receiveAttack(41, myShip);
+    expect(myShip.shipLength).toEqual("sunken ship");
+  });
+
+  test("Attack missed the ship", () => {
+    const index = 40;
     const myShip = new Ship(4);
     const game = new gameboard(10);
-    const returnValue = game.placeship(index, myShip);
+    const row = game.getRow(index);
+    game.placeship(index, myShip);
+    game.receiveAttack(45, myShip);
+    expect(myShip.shipLength).toEqual([4, 4, 4, 4]);
+    expect(game.boradLength[row]).toEqual([4, 4, 4, 4, 0, -1, 0, 0, 0, 0]);
+  });
 
-    expect(returnValue).toBe("Index cant be negative number or null");
+  test("Shot at same location", () => {
+    const index = 40;
+    const myShip = new Ship(4);
+    const game = new gameboard(10);
+    const row = game.getRow(index);
+    game.placeship(index, myShip);
+    game.receiveAttack(45, myShip);
+    const sameLocation = game.receiveAttack(45, myShip);
+    expect(sameLocation).toEqual("Shot at the same locaiton");
   });
 });

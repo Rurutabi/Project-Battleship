@@ -79,41 +79,50 @@ export class gameboard {
     }
   }
 
-  receiveAttack(hitLocation) {
+  receiveAttack(hitLocation, ship) {
     let hitRow = this.getRow(hitLocation);
     let hitCol = this.getCol(hitLocation);
 
-    if (this.boradLength[hitRow][hitCol] === 2) {
-      const index = this.getShipCoordinate(this.subMarine, hitLocation);
-      this.subMarine.hits(index);
-    }
+    if (this.boradLength[hitRow][hitCol] !== -1) {
+      // if (this.boradLength[hitRow][hitCol] === 2) {
+      //   const index = this.getShipCoordinate(this.subMarine, hitLocation);
+      //   this.subMarine.hits(index);
+      // }
 
-    if (this.boradLength[hitRow][hitCol] === 3) {
-      const index = this.getShipCoordinate(this.destoryer, hitLocation);
-      this.destoryer.hits(index);
-    }
+      // if (this.boradLength[hitRow][hitCol] === 3) {
+      //   const index = this.getShipCoordinate(this.destoryer, hitLocation);
+      //   this.destoryer.hits(index);
+      // }
 
-    if (this.boradLength[hitRow][hitCol] === 4) {
-      const index = this.getShipCoordinate(this.battleShip, hitLocation);
-      this.battleShip.hits(index);
-    }
+      // if (this.boradLength[hitRow][hitCol] === 4) {
+      //   const index = this.getShipCoordinate(this.battleShip, hitLocation);
+      //   this.battleShip.hits(index);
+      // }
 
-    if (this.boradLength[hitRow][hitCol] === 5) {
-      const index = this.getShipCoordinate(this.cruiser, hitLocation);
-      this.cruiser.hits(index);
-    }
+      // if (this.boradLength[hitRow][hitCol] === 5) {
+      //   const index = this.getShipCoordinate(this.cruiser, hitLocation);
+      //   this.cruiser.hits(index);
+      // }
 
-    if (this.boradLength[hitRow][hitCol] === 6) {
-      const index = this.getShipCoordinate(this.aircraftCarrier, hitLocation);
-      this.aircraftCarrier.hits(index);
-    }
+      // if (this.boradLength[hitRow][hitCol] === 6) {
+      //   const index = this.getShipCoordinate(this.aircraftCarrier, hitLocation);
+      //   this.aircraftCarrier.hits(index);
+      // }
 
-    this.boradLength[hitRow][hitCol] = -1;
+      //For testing if target is hitted by the bullet
+      if (this.boradLength[hitRow][hitCol] === ship.shipLength.length) {
+        const index = this.getShipCoordinate(ship, hitLocation);
+
+        //Shiplength = sunken ship when every value inside the array is -1
+        ship.hits(index);
+      }
+
+      // If a user shoots at this grid location, mark it as -1 to indicate a shot.
+      this.boradLength[hitRow][hitCol] = -1;
+    } else {
+      return "Shot at the same locaiton";
+    }
   }
-
-  missedShot() {}
-
-  reportSunk() {}
 
   //Get indexof
   getShipCoordinate(ship, hitlocation) {
