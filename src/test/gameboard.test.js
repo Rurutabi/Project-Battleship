@@ -1,5 +1,4 @@
 import { Ship } from "../code/ship.js";
-
 import { gameboard } from "../code/gameboard.js";
 
 beforeAll(() => console.log("Starting Test"));
@@ -13,7 +12,7 @@ describe("Testing game board", () => {
     const row = game.getRow(index);
     game.placeship(index, myShip);
 
-    expect(game.boradLength[row]).toEqual([0, 0, 4, 4, 4, 4, 0, 0, 0, 0]);
+    expect(game.playerBoard[row]).toEqual([0, 0, 4, 4, 4, 4, 0, 0, 0, 0]);
   });
 
   test("its out of bound", () => {
@@ -33,7 +32,7 @@ describe("Testing game board", () => {
     game.placeship(index, myShip);
     game.receiveAttack(42, myShip);
     expect(myShip.shipLength).toEqual([4, 4, -1, 4]);
-    expect(game.boradLength[row]).toEqual([4, 4, -1, 4, 0, 0, 0, 0, 0, 0]);
+    expect(game.playerBoard[row]).toEqual([4, 4, -1, 4, 0, 0, 0, 0, 0, 0]);
   });
 
   test("Sunken Ship?", () => {
@@ -54,7 +53,7 @@ describe("Testing game board", () => {
     game.placeship(index, myShip);
     game.receiveAttack(45, myShip);
     expect(myShip.shipLength).toEqual([4, 4, 4, 4]);
-    expect(game.boradLength[row]).toEqual([4, 4, 4, 4, 0, -1, 0, 0, 0, 0]);
+    expect(game.playerBoard[row]).toEqual([4, 4, 4, 4, 0, -1, 0, 0, 0, 0]);
   });
 
   test("Shot at same location", () => {
