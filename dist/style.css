@@ -50,3 +50,7 @@ span {
   background-color: #ddd; /* Adjust background color as needed */
   border: 1px solid #888; /* Adjust border as needed */
 }
+
+.red {
+  background-color: red;
+}

@@ -28,21 +28,36 @@ export class gameboard {
 
   playerTurn() {
     const aiCell = document.querySelectorAll(".ai-cell");
-    const playerCell = document.querySelector(".player-cell");
-
+    const playerCell = document.querySelectorAll(".player-cell");
+    const recordAiShot = new Set();
     //Index before 100 is for player
     //Index after 99 is for ai
     aiCell.forEach((value, index) => {
-      value.addEventListener("click", () => {
-        const row = this.getRow(index);
-        const col = this.getCol(index);
+      const aiRow = this.getRow(index);
+      const aiCol = this.getCol(index);
 
-        if (this.player && this.aiBoard[row][col] !== -1) {
+      value.addEventListener("click", () => {
+        if (!value.classList.contains("red")) {
           this.receiveAttack(index, _, this.aiBoard);
-          // this.player = false;
-          // this.ai = true;
-          console.log("work");
+          value.classList.add("red");
+
+          let randomIndex;
+
+          do {
+            randomIndex = Math.floor(Math.random() * 100);
+          } while (recordAiShot.has(randomIndex) && recordAiShot.size < 100);
+          recordAiShot.add(randomIndex);
+
+          for (const value of playerCell) {
+            this.receiveAttack(randomIndex, _, this.playerBoard);
+            playerCell[randomIndex].classList.add("red");
+            break;
+          }
         }
+
+        console.log(this.playerBoard);
+        console.log("-------------------------------");
+        console.log(this.aiBoard);
       });
     });
   }
@@ -146,9 +161,6 @@ export class gameboard {
     let hitRow = this.getRow(hitLocation);
     let hitCol = this.getCol(hitLocation);
 
-    console.log(hitRow);
-    console.log(hitCol);
-
     if (board[hitRow][hitCol] !== -1) {
       if (board[hitRow][hitCol] === 2) {
         const index = this.getShipCoordinate(this.subMarine, hitLocation);
@@ -193,12 +205,7 @@ export class gameboard {
     }
   }
 
-  //Get indexof
-  getShipCoordinate(ship, hitlocation) {
-    return ship.shipCoordinate.indexOf(hitlocation);
-  }
-
-  //Help method
+  /*Helper method*/
   getRow(index) {
     if (index >= 100) {
       return Math.floor(index / 10) - 10;
@@ -217,5 +224,10 @@ export class gameboard {
     } else {
       return false;
     }
+  }
+
+  //Get indexof
+  getShipCoordinate(ship, hitlocation) {
+    return ship.shipCoordinate.indexOf(hitlocation);
   }
 }
