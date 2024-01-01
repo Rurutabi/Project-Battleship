@@ -4,7 +4,7 @@ import { Player } from "../code/player.js";
 export class gameboard {
   //Ship
   subMarine = new Ship(2);
-  destoryer = new Ship(3);
+  destroyer = new Ship(3);
   battleShip = new Ship(4);
   cruiser = new Ship(5);
   aircraftCarrier = new Ship(6);
@@ -17,6 +17,8 @@ export class gameboard {
     this.playerBoard = this.createArrayboard(playerBoard);
     this.aiBoard = this.createArrayboard(aiBoard);
     this.createBoard();
+    this.createShip();
+    this.dragShip();
     this.playerTurn();
   }
 
@@ -33,12 +35,9 @@ export class gameboard {
     //Index before 100 is for player
     //Index after 99 is for ai
     aiCell.forEach((value, index) => {
-      const aiRow = this.getRow(index);
-      const aiCol = this.getCol(index);
-
       value.addEventListener("click", () => {
         if (!value.classList.contains("red")) {
-          this.receiveAttack(index, _, this.aiBoard);
+          this.receiveAttack(index, this.aiBoard);
           value.classList.add("red");
 
           let randomIndex;
@@ -48,29 +47,14 @@ export class gameboard {
           } while (recordAiShot.has(randomIndex) && recordAiShot.size < 100);
           recordAiShot.add(randomIndex);
 
-          for (const value of playerCell) {
-            this.receiveAttack(randomIndex, _, this.playerBoard);
-            playerCell[randomIndex].classList.add("red");
-            break;
-          }
+          this.receiveAttack(randomIndex, this.playerBoard);
+          playerCell[randomIndex].classList.add("red");
         }
 
-        console.log(this.playerBoard);
-        console.log("-------------------------------");
-        console.log(this.aiBoard);
+        // console.log(this.playerBoard);
+        // console.log("-------------------------------");
+        // console.log(this.aiBoard);
       });
-    });
-  }
-
-  aiTurn() {
-    const playerCell = document.querySelector(".player-cell");
-
-    playerCell.forEach((value, index) => {
-      if (this.ai) {
-        this.receiveAttack(index, _, this.playerBoard);
-        this.ai = false;
-        this.player = true;
-      }
     });
   }
 
@@ -91,6 +75,8 @@ export class gameboard {
     aiBoardContainer.classList.add("board-container", "ai-board");
     outerContainer.appendChild(aiBoardContainer);
 
+    aiBoardContainer.classList.add("hide");
+
     this.populateBoard(playerBoardContainer);
     this.populateBoard(aiBoardContainer);
   }
@@ -101,19 +87,6 @@ export class gameboard {
       for (let j = 0; j < 10; j++) {
         //col
         const grid = document.createElement("div");
-
-        /*If you want to include number
-        if (i !== 0 && j !== 0) {
-          grid.classList.add("cell");
-        } else if (j === 0 && i !== 0) {
-          grid.classList.add("no-cell");
-          //Delete this later when you are done
-          grid.textContent = i;
-        } else if (j !== 0) {
-          grid.classList.add("no-cell");
-          //Delete this later when you are done
-          grid.textContent = j;
-        }*/
 
         grid.classList.add("cell");
 
@@ -127,6 +100,63 @@ export class gameboard {
       }
     }
   }
+
+  createShip() {
+    const outerContainer = document.querySelector(".container");
+
+    const otherConainter = document.createElement("div");
+    otherConainter.classList.add("other-container");
+    outerContainer.appendChild(otherConainter);
+
+    this.populateShip(this.subMarine.shipLength.length, otherConainter);
+    this.populateShip(this.destroyer.shipLength.length, otherConainter);
+    this.populateShip(this.aircraftCarrier.shipLength.length, otherConainter);
+    this.populateShip(this.cruiser.shipLength.length, otherConainter);
+    this.populateShip(this.battleShip.shipLength.length, otherConainter);
+  }
+
+  populateShip(shipLength, otherConainter) {
+    const shipContainer = document.createElement("div");
+    shipContainer.classList.add("ship-container");
+    otherConainter.appendChild(shipContainer);
+
+    shipContainer.draggable = true;
+
+    for (let i = 0; i < shipLength; i++) {
+      const shipCell = document.createElement("div");
+      shipCell.classList.add("ship-cell");
+      shipContainer.appendChild(shipCell);
+    }
+  }
+
+  dragShip() {
+    const playerCell = document.querySelectorAll(".player-cell");
+    const shipContainer = document.querySelectorAll(".ship-container");
+
+    shipContainer.forEach((element) => {
+      element.addEventListener("dragstart", (e) => {
+        const shipCells = element.querySelectorAll(".ship-cell");
+
+        // Log the length of ship-cell elements
+        console.log("Number of ship-cells:", shipCells.length);
+
+        playerCell.forEach((value, index) => {
+          value.addEventListener("dragover", (e) => {
+            e.preventDefault();
+          });
+          value.addEventListener("drop", (e) => {
+            value.classList.add("green");
+          });
+        });
+      });
+    });
+  }
+
+  // subMarine = new Ship(2);
+  // destroyer  = new Ship(3);
+  // battleShip = new Ship(4);
+  // cruiser = new Ship(5);
+  // aircraftCarrier = new Ship(6);
 
   //only work horizontally for now
   placeship(startLocation, ship) {
@@ -157,7 +187,7 @@ export class gameboard {
     }
   }
 
-  receiveAttack(hitLocation, ship, board) {
+  receiveAttack(hitLocation, board, ship) {
     let hitRow = this.getRow(hitLocation);
     let hitCol = this.getCol(hitLocation);
 
@@ -168,8 +198,8 @@ export class gameboard {
       }
 
       if (board[hitRow][hitCol] === 3) {
-        const index = this.getShipCoordinate(this.destoryer, hitLocation);
-        this.destoryer.hits(index);
+        const index = this.getShipCoordinate(this.destroyer, hitLocation);
+        this.destroyer.hits(index);
       }
 
       if (board[hitRow][hitCol] === 4) {
@@ -189,10 +219,9 @@ export class gameboard {
 
       //For testing if target is hitted by the bullet
 
-      if (ship !== _) {
+      if (ship !== undefined) {
         if (board[hitRow][hitCol] === ship.shipLength.length) {
           const index = this.getShipCoordinate(ship, hitLocation);
-
           //Shiplength = sunken ship when every value inside the array is -1
           ship.hits(index);
         }

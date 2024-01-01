@@ -25,23 +25,16 @@ span {
 
 .container {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
   height: 100vh;
-  gap: 24px;
+  gap: 10%;
 }
 
 .board-container {
   display: grid;
   grid-template-columns: repeat(10, 50px); /* Adjust width as needed */
   grid-template-rows: repeat(10, 50px); /* Adjust height as needed */
-}
-
-.cell,
-.no-cell {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .cell {
@@ -51,6 +44,37 @@ span {
   border: 1px solid #888; /* Adjust border as needed */
 }
 
+.ship-container {
+  display: grid;
+  grid-template-columns: repeat(6, 50px); /* Adjust width as needed */
+  grid-template-rows: repeat(1, 50px); /* Adjust height as needed */
+}
+
+.ship-cell {
+  width: 50px; /* Adjust width as needed */
+  height: 50px; /* Adjust height as needed */
+  background-color: green;
+  text-align: center;
+  border: 0.5px solid #000000; /* Adjust border as needed */
+}
+
 .red {
-  background-color: red;
+  background-color: rgb(240, 131, 131);
+}
+
+.hide {
+  display: none;
+}
+
+.other-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 600px;
+  padding: 12px;
+  gap: 12px;
+}
+
+.green {
+  background-color: green;
 }

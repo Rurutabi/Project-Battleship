@@ -11,7 +11,6 @@ describe("Testing game board", () => {
     const game = new gameboard(10);
     const row = game.getRow(index);
     game.placeship(index, myShip);
-
     expect(game.playerBoard[row]).toEqual([0, 0, 4, 4, 4, 4, 0, 0, 0, 0]);
   });
 
@@ -20,7 +19,6 @@ describe("Testing game board", () => {
     const myShip = new Ship(2);
     const game = new gameboard(10);
     const returnValue = game.placeship(index, myShip);
-
     expect(returnValue).toBe("out of bound");
   });
 
@@ -30,7 +28,7 @@ describe("Testing game board", () => {
     const game = new gameboard(10);
     const row = game.getRow(index);
     game.placeship(index, myShip);
-    game.receiveAttack(42, myShip);
+    game.receiveAttack(42, game.playerBoard, myShip);
     expect(myShip.shipLength).toEqual([4, 4, -1, 4]);
     expect(game.playerBoard[row]).toEqual([4, 4, -1, 4, 0, 0, 0, 0, 0, 0]);
   });
@@ -40,8 +38,8 @@ describe("Testing game board", () => {
     const myShip = new Ship(2);
     const game = new gameboard(10);
     game.placeship(index, myShip);
-    game.receiveAttack(40, myShip);
-    game.receiveAttack(41, myShip);
+    game.receiveAttack(40, game.playerBoard, myShip);
+    game.receiveAttack(41, game.playerBoard, myShip);
     expect(myShip.shipLength).toEqual("sunken ship");
   });
 
@@ -51,7 +49,7 @@ describe("Testing game board", () => {
     const game = new gameboard(10);
     const row = game.getRow(index);
     game.placeship(index, myShip);
-    game.receiveAttack(45, myShip);
+    game.receiveAttack(45, game.playerBoard, myShip);
     expect(myShip.shipLength).toEqual([4, 4, 4, 4]);
     expect(game.playerBoard[row]).toEqual([4, 4, 4, 4, 0, -1, 0, 0, 0, 0]);
   });
@@ -60,10 +58,9 @@ describe("Testing game board", () => {
     const index = 40;
     const myShip = new Ship(4);
     const game = new gameboard(10);
-    const row = game.getRow(index);
     game.placeship(index, myShip);
-    game.receiveAttack(45, myShip);
-    const sameLocation = game.receiveAttack(45, myShip);
+    game.receiveAttack(45, game.playerBoard, myShip);
+    const sameLocation = game.receiveAttack(45, game.playerBoard, myShip);
     expect(sameLocation).toEqual("Shot at the same locaiton");
   });
 });
