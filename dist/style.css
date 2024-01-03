@@ -46,7 +46,7 @@ span {
 
 .ship-container {
   display: grid;
-  grid-template-columns: repeat(6, 50px); /* Adjust width as needed */
+  /* grid-template-columns: repeat(6, 50px); */
   grid-template-rows: repeat(1, 50px); /* Adjust height as needed */
 }
 

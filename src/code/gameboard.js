@@ -8,7 +8,7 @@ export class gameboard {
   battleShip = new Ship(4);
   cruiser = new Ship(5);
   aircraftCarrier = new Ship(6);
-
+  draggedShipElement = null;
   //Player
   player = new Player(true);
   ai = new Player(false);
@@ -104,27 +104,34 @@ export class gameboard {
   createShip() {
     const outerContainer = document.querySelector(".container");
 
-    const otherConainter = document.createElement("div");
-    otherConainter.classList.add("other-container");
-    outerContainer.appendChild(otherConainter);
+    const shipListContainer = document.createElement("div");
+    shipListContainer.classList.add("other-container");
+    outerContainer.appendChild(shipListContainer);
 
-    this.populateShip(this.subMarine.shipLength.length, otherConainter);
-    this.populateShip(this.destroyer.shipLength.length, otherConainter);
-    this.populateShip(this.aircraftCarrier.shipLength.length, otherConainter);
-    this.populateShip(this.cruiser.shipLength.length, otherConainter);
-    this.populateShip(this.battleShip.shipLength.length, otherConainter);
+    this.populateShip(this.subMarine.shipLength.length, shipListContainer);
+    this.populateShip(this.destroyer.shipLength.length, shipListContainer);
+    this.populateShip(
+      this.aircraftCarrier.shipLength.length,
+      shipListContainer
+    );
+    this.populateShip(this.cruiser.shipLength.length, shipListContainer);
+    this.populateShip(this.battleShip.shipLength.length, shipListContainer);
   }
 
-  populateShip(shipLength, otherConainter) {
+  populateShip(shipLength, shipListContainer) {
     const shipContainer = document.createElement("div");
     shipContainer.classList.add("ship-container");
-    otherConainter.appendChild(shipContainer);
+    shipContainer.setAttribute("id", `ship${shipLength}-container`);
+    shipContainer.style.gridTemplateColumns = `repeat(${shipLength}, 50px)`;
+    shipListContainer.appendChild(shipContainer);
 
     shipContainer.draggable = true;
 
     for (let i = 0; i < shipLength; i++) {
       const shipCell = document.createElement("div");
       shipCell.classList.add("ship-cell");
+
+      shipCell.setAttribute("id", `${shipLength}`);
       shipContainer.appendChild(shipCell);
     }
   }
@@ -135,22 +142,50 @@ export class gameboard {
 
     shipContainer.forEach((element) => {
       element.addEventListener("dragstart", (e) => {
-        const shipCells = element.querySelectorAll(".ship-cell");
+        e.dataTransfer.setData("text/shipContainerID", element.id);
+        e.dataTransfer.setData("text/shipCellRelativePos", e.offsetX);
+      });
+    });
 
-        // Log the length of ship-cell elements
-        console.log("Number of ship-cells:", shipCells.length);
+    playerCell.forEach((value, index) => {
+      value.addEventListener("dragover", (e) => {
+        e.preventDefault();
+      });
 
-        playerCell.forEach((value, index) => {
-          value.addEventListener("dragover", (e) => {
-            e.preventDefault();
-          });
-          value.addEventListener("drop", (e) => {
-            value.classList.add("green");
-          });
-        });
+      value.addEventListener("drop", (e) => {
+        const shipContainerID = e.dataTransfer.getData("text/shipContainerID");
+        const shipCon = document.getElementById(shipContainerID);
+        const shipCell = shipCon.querySelectorAll(".ship-cell");
+
+        const shipCellRelativePos = parseInt(
+          e.dataTransfer.getData("text/shipCellRelativePos"),
+          10
+        );
+
+        const selectedIndex = Math.floor(shipCellRelativePos / 50);
+
+        if (selectedIndex === 0) {
+          for (let i = index; i < index + shipCell.length; i++) {
+            playerCell[i].classList.add("green");
+            shipCon.remove();
+          }
+        } else {
+          const newIndex = index - selectedIndex;
+          for (let i = newIndex; i < newIndex + shipCell.length; i++) {
+            playerCell[i].classList.add("green");
+            shipCon.remove();
+          }
+        }
       });
     });
   }
+
+  // handleDropAction(playerCell, startIndex, shipCellLength, shipCon) {
+  //   for (let i = startIndex; i < startIndex + shipCellLength; i++) {
+  //     playerCell[i].classList.add("green");
+  //   }
+  //   shipCon.remove();
+  // }
 
   // subMarine = new Ship(2);
   // destroyer  = new Ship(3);
