@@ -53,7 +53,6 @@ span {
 .ship-cell {
   width: 50px; /* Adjust width as needed */
   height: 50px; /* Adjust height as needed */
-  background-color: green;
   text-align: center;
   border: 0.5px solid #000000; /* Adjust border as needed */
 }
@@ -75,6 +74,7 @@ span {
   gap: 12px;
 }
 
-.green {
+.placed {
   background-color: green;
+  border: 0.5px solid #000000; /* Adjust border as needed */
 }

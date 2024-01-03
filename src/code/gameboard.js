@@ -153,9 +153,9 @@ export class gameboard {
       });
 
       value.addEventListener("drop", (e) => {
-        const shipContainerID = e.dataTransfer.getData("text/shipContainerID");
-        const shipCon = document.getElementById(shipContainerID);
-        const shipCell = shipCon.querySelectorAll(".ship-cell");
+        const draggedElementID = e.dataTransfer.getData("text/shipContainerID");
+        const shipContainer = document.getElementById(draggedElementID);
+        const shipCell = shipContainer.querySelectorAll(".ship-cell");
 
         const shipCellRelativePos = parseInt(
           e.dataTransfer.getData("text/shipCellRelativePos"),
@@ -164,34 +164,49 @@ export class gameboard {
 
         const selectedIndex = Math.floor(shipCellRelativePos / 50);
 
-        if (selectedIndex === 0) {
-          for (let i = index; i < index + shipCell.length; i++) {
-            playerCell[i].classList.add("green");
-            shipCon.remove();
-          }
-        } else {
-          const newIndex = index - selectedIndex;
-          for (let i = newIndex; i < newIndex + shipCell.length; i++) {
-            playerCell[i].classList.add("green");
-            shipCon.remove();
+        const firstIndex = index - selectedIndex;
+        const lastIndex = firstIndex + shipCell.length;
+        const middleIndex = Math.floor((firstIndex + lastIndex) / 2);
+
+        //Row
+        const firstRow = this.getRow(firstIndex);
+        const lastRow =
+          lastIndex % 10 === 0
+            ? this.getRow(lastIndex - 1)
+            : this.getRow(lastIndex);
+
+        // console.log("original index", index);
+        // console.log(
+        //   "first index",
+        //   firstIndex,
+        //   "last index",
+        //   lastIndex,
+        //   "middle index",
+        //   middleIndex
+        // );
+        // console.log(firstCol, lastCol);
+
+        if (
+          firstRow === lastRow &&
+          this.isCellPlaced(playerCell, firstIndex, lastIndex) === true
+        ) {
+          for (let i = firstIndex; i < firstIndex + shipCell.length; i++) {
+            playerCell[i].classList.add("placed");
+            shipContainer.remove();
           }
         }
       });
     });
   }
 
-  // handleDropAction(playerCell, startIndex, shipCellLength, shipCon) {
-  //   for (let i = startIndex; i < startIndex + shipCellLength; i++) {
-  //     playerCell[i].classList.add("green");
-  //   }
-  //   shipCon.remove();
-  // }
-
-  // subMarine = new Ship(2);
-  // destroyer  = new Ship(3);
-  // battleShip = new Ship(4);
-  // cruiser = new Ship(5);
-  // aircraftCarrier = new Ship(6);
+  isCellPlaced(playerCell, firstIndex, lastIndex) {
+    for (let i = firstIndex; i < lastIndex; i++) {
+      if (playerCell[i].classList.contains("placed")) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   //only work horizontally for now
   placeship(startLocation, ship) {
@@ -287,6 +302,12 @@ export class gameboard {
       return true;
     } else {
       return false;
+    }
+  }
+
+  colorFromLength(theLength, element) {
+    if (theLength === 2) {
+      element.classList.contains();
     }
   }
 
