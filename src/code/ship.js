@@ -1,20 +1,20 @@
 export class Ship {
   constructor(shipLength) {
     if (shipLength >= 0) {
-      this.shipLength = Array.from({ length: shipLength }, () => shipLength);
+      this.shipLength = shipLength;
     } else {
       this.shipLength = -1;
     }
     this.shipCoordinate = [];
   }
 
-  hits(hitValue) {
-    this.shipLength[hitValue] = -1;
+  hits() {
+    this.shipLength = this.shipLength - 1;
     this.isSunk();
   }
 
   isSunk() {
-    if (this.shipLength.every((value) => value === -1)) {
+    if (this.shipLength === 0) {
       this.shipLength = "sunken ship";
     }
   }

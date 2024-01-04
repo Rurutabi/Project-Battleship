@@ -16,20 +16,19 @@ describe("Ship tests.", () => {
 
   test("check length of ship with positive value", () => {
     const myShip = new Ship(10);
-    expect(myShip.shipLength).toEqual([10, 10, 10, 10, 10, 10, 10, 10, 10, 10]);
+    expect(myShip.shipLength).toEqual(10);
   });
 
   test("check if the ship is hitted by bullet", () => {
     const myShip = new Ship(5);
-    const hitValue = 5;
-    myShip.hits(hitValue);
-    expect(myShip.shipLength).toEqual([5, 5, 5, 5, 5, -1]);
+    myShip.hits();
+    expect(myShip.shipLength).toEqual(4);
   });
 
   test("check if the ship is sunked when all value is 0", () => {
     const myShip = new Ship(2);
-    myShip.hits(0);
-    myShip.hits(1);
+    myShip.hits();
+    myShip.hits();
     expect(myShip.shipLength).toEqual("sunken ship");
   });
 });

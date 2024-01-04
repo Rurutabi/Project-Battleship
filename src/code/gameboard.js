@@ -9,9 +9,12 @@ export class gameboard {
   cruiser = new Ship(5);
   aircraftCarrier = new Ship(6);
   draggedShipElement = null;
-  //Player
+
+  //PlayerplaceShip
   player = new Player(true);
   ai = new Player(false);
+
+  recordShipLocation = [];
 
   constructor(playerBoard, aiBoard) {
     this.playerBoard = this.createArrayboard(playerBoard);
@@ -20,6 +23,15 @@ export class gameboard {
     this.createShip();
     this.dragShip();
     this.playerTurn();
+
+    const index = 40;
+    const myShip = new Ship(4);
+
+    this.placeShip(index, myShip);
+    this.placeShip(58, this.subMarine);
+
+    console.log(this.recordShipLocation);
+    this.receiveAttack(45, this.playerBoard, myShip);
   }
 
   createArrayboard(playerBoard) {
@@ -130,7 +142,7 @@ export class gameboard {
     for (let i = 0; i < shipLength; i++) {
       const shipCell = document.createElement("div");
       shipCell.classList.add("ship-cell");
-
+      this.colorFromLength(shipLength, shipCell);
       shipCell.setAttribute("id", `${shipLength}`);
       shipContainer.appendChild(shipCell);
     }
@@ -166,7 +178,7 @@ export class gameboard {
 
         const firstIndex = index - selectedIndex;
         const lastIndex = firstIndex + shipCell.length;
-        const middleIndex = Math.floor((firstIndex + lastIndex) / 2);
+        const shipLength = lastIndex - firstIndex;
 
         //Row
         const firstRow = this.getRow(firstIndex);
@@ -175,25 +187,16 @@ export class gameboard {
             ? this.getRow(lastIndex - 1)
             : this.getRow(lastIndex);
 
-        // console.log("original index", index);
-        // console.log(
-        //   "first index",
-        //   firstIndex,
-        //   "last index",
-        //   lastIndex,
-        //   "middle index",
-        //   middleIndex
-        // );
-        // console.log(firstCol, lastCol);
-
         if (
           firstRow === lastRow &&
           this.isCellPlaced(playerCell, firstIndex, lastIndex) === true
         ) {
           for (let i = firstIndex; i < firstIndex + shipCell.length; i++) {
             playerCell[i].classList.add("placed");
+            this.colorFromLength(shipLength, playerCell[i]);
             shipContainer.remove();
           }
+          // this.placeShip(firstIndex)
         }
       });
     });
@@ -209,7 +212,7 @@ export class gameboard {
   }
 
   //only work horizontally for now
-  placeship(startLocation, ship) {
+  placeShip(startLocation, ship) {
     if (startLocation < 0 || startLocation === null)
       return "Index cant be negative number or null";
 
@@ -219,12 +222,15 @@ export class gameboard {
     if (startRow > this.playerBoard.length)
       return "Index is larger than the board";
 
-    if (startCol + ship.shipLength.length <= this.playerBoard.length) {
+    if (startCol + ship.shipLength <= this.playerBoard.length) {
       //Store ship coordinate
-      for (let k = 0; k < ship.shipLength.length; k++) {
-        this.playerBoard[startRow][startCol] = ship.shipLength[k];
+      for (let k = 0; k < ship.shipLength; k++) {
+        this.playerBoard[startRow][startCol] = ship.shipLength;
         if (startCol <= 10) {
-          ship.shipCoordinate.push(startLocation);
+          this.recordShipLocation.push({
+            shipLocation: startLocation,
+            shipLength: ship.shipLength,
+          });
           startLocation++;
           startCol++;
         } else {
@@ -241,47 +247,47 @@ export class gameboard {
     let hitRow = this.getRow(hitLocation);
     let hitCol = this.getCol(hitLocation);
 
-    if (board[hitRow][hitCol] !== -1) {
-      if (board[hitRow][hitCol] === 2) {
-        const index = this.getShipCoordinate(this.subMarine, hitLocation);
-        this.subMarine.hits(index);
+    // if (board[hitRow][hitCol] !== -1) {
+    //   if (board[hitRow][hitCol] === 2) {
+    //     this.subMarine.hits();
+    //   }
+
+    //   if (board[hitRow][hitCol] === 3) {
+    //     this.destroyer.hits();
+    //   }
+
+    //   if (board[hitRow][hitCol] === 4) {
+    //     this.battleShip.hits();
+    //   }
+
+    //   if (board[hitRow][hitCol] === 5) {
+    //     this.cruiser.hits();
+    //   }
+
+    //   if (board[hitRow][hitCol] === 6) {
+    //     this.aircraftCarrier.hits();
+    //   }
+
+    //   //For testing if target is hitted by the bullet
+
+    //   if (ship !== undefined) {
+    //     console.log("test");
+    //     const recordLength = ship.shipLength;
+    //     if (board[hitRow][hitCol] === recordLength) {
+    //       ship.hits();
+    //     }
+    //   }
+
+    for (let i = 0; i < this.recordShipLocation.length; i++) {
+      if (hitLocation === this.recordShipLocation[i].shipLocation) {
       }
-
-      if (board[hitRow][hitCol] === 3) {
-        const index = this.getShipCoordinate(this.destroyer, hitLocation);
-        this.destroyer.hits(index);
-      }
-
-      if (board[hitRow][hitCol] === 4) {
-        const index = this.getShipCoordinate(this.battleShip, hitLocation);
-        this.battleShip.hits(index);
-      }
-
-      if (board[hitRow][hitCol] === 5) {
-        const index = this.getShipCoordinate(this.cruiser, hitLocation);
-        this.cruiser.hits(index);
-      }
-
-      if (board[hitRow][hitCol] === 6) {
-        const index = this.getShipCoordinate(this.aircraftCarrier, hitLocation);
-        this.aircraftCarrier.hits(index);
-      }
-
-      //For testing if target is hitted by the bullet
-
-      if (ship !== undefined) {
-        if (board[hitRow][hitCol] === ship.shipLength.length) {
-          const index = this.getShipCoordinate(ship, hitLocation);
-          //Shiplength = sunken ship when every value inside the array is -1
-          ship.hits(index);
-        }
-      }
-
-      // If a user shoots at this grid location, mark it as -1 to indicate a shot.
-      board[hitRow][hitCol] = -1;
-    } else {
-      return "Shot at the same locaiton";
     }
+
+    // If a user shoots at this grid location, mark it as -1 to indicate a shot.
+    board[hitRow][hitCol] = -1;
+    // } else {
+    //   return "Shot at the same locaiton";
+    // }
   }
 
   /*Helper method*/
@@ -307,7 +313,19 @@ export class gameboard {
 
   colorFromLength(theLength, element) {
     if (theLength === 2) {
-      element.classList.contains();
+      element.classList.add("Midnightblue");
+    }
+    if (theLength === 3) {
+      element.classList.add("Brown");
+    }
+    if (theLength === 4) {
+      element.classList.add("Cadetblue");
+    }
+    if (theLength === 5) {
+      element.classList.add("Palevioletred");
+    }
+    if (theLength === 6) {
+      element.classList.add("Crimson");
     }
   }
 
