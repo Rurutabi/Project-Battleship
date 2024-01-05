@@ -57,15 +57,11 @@ span {
   border: 0.5px solid #000000; /* Adjust border as needed */
 }
 
-.red {
-  background-color: rgb(240, 131, 131);
-}
-
 .hide {
   display: none;
 }
 
-.other-container {
+.shiplist-container {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -79,22 +75,30 @@ span {
 }
 
 /*Color*/
-.Brown {
-  background-color: #a52a2a;
+.goldenrod {
+  background-color: #daa520;
 }
 
-.Cadetblue {
-  background-color: #5f9ea0;
+.darkviolet {
+  background-color: #9400d3;
 }
 
-.Crimson {
-  background-color: #dc143c;
+.chartreuse {
+  background-color: #7fff00;
 }
 
-.Midnightblue {
+.midnightblue {
   background-color: #191970;
 }
 
-.Palevioletred {
+.palevioletred {
   background-color: #db7093;
+}
+
+.aquamarine {
+  background-color: #7fffd4;
+}
+
+.red {
+  background-color: red;
 }

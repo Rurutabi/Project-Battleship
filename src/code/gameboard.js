@@ -10,10 +10,11 @@ export class gameboard {
   aircraftCarrier = new Ship(6);
   draggedShipElement = null;
 
-  //PlayerplaceShip
+  //PlayerplacePlayerShip
   player = new Player(true);
   ai = new Player(false);
 
+  recordShipCreate = [];
   recordShipLocation = [];
 
   constructor(playerBoard, aiBoard) {
@@ -22,7 +23,7 @@ export class gameboard {
     this.createBoard();
     this.createShip();
     this.dragShip();
-    this.playerTurn();
+    this.handleTurnClick();
   }
 
   createArrayboard(playerBoard) {
@@ -31,32 +32,39 @@ export class gameboard {
     );
   }
 
-  playerTurn() {
+  handleTurnClick() {
     const aiCell = document.querySelectorAll(".ai-cell");
     const playerCell = document.querySelectorAll(".player-cell");
     const recordAiShot = new Set();
-    //Index before 100 is for player
-    //Index after 99 is for ai
+
     aiCell.forEach((value, index) => {
       value.addEventListener("click", () => {
-        if (!value.classList.contains("red")) {
+        if (
+          !value.classList.contains("aquamarine") &&
+          !value.classList.contains("red")
+        ) {
+          //Ai board
           this.receiveAttack(index, this.aiBoard);
-          value.classList.add("red");
+          value.classList.add("aquamarine");
 
+          //Player board
           let randomIndex;
-
           do {
             randomIndex = Math.floor(Math.random() * 100);
           } while (recordAiShot.has(randomIndex) && recordAiShot.size < 100);
           recordAiShot.add(randomIndex);
 
-          this.receiveAttack(randomIndex, this.playerBoard);
-          playerCell[randomIndex].classList.add("red");
-        }
+          const playerRow = this.getRow(randomIndex);
+          const playerCol = this.getCol(randomIndex);
 
-        // console.log(this.playerBoard);
-        // console.log("-------------------------------");
-        // console.log(this.aiBoard);
+          if (this.playerBoard[playerRow][playerCol] === 0) {
+            playerCell[randomIndex].classList.add("aquamarine");
+          } else {
+            playerCell[randomIndex].classList.add("red");
+          }
+
+          this.receiveAttack(randomIndex, this.playerBoard);
+        }
       });
     });
   }
@@ -90,15 +98,12 @@ export class gameboard {
       for (let j = 0; j < 10; j++) {
         //col
         const grid = document.createElement("div");
-
         grid.classList.add("cell");
-
         if (boardContainer.classList.contains("player-board")) {
           grid.classList.add("player-cell");
         } else {
           grid.classList.add("ai-cell");
         }
-
         boardContainer.appendChild(grid);
       }
     }
@@ -106,110 +111,127 @@ export class gameboard {
 
   createShip() {
     const outerContainer = document.querySelector(".container");
-
     const shipListContainer = document.createElement("div");
-    shipListContainer.classList.add("other-container");
+    shipListContainer.classList.add("shiplist-container");
     outerContainer.appendChild(shipListContainer);
 
-    this.populateShip(this.subMarine.shipLength, shipListContainer);
-    this.populateShip(this.destroyer.shipLength, shipListContainer);
-    this.populateShip(this.aircraftCarrier.shipLength, shipListContainer);
-    this.populateShip(this.cruiser.shipLength, shipListContainer);
-    this.populateShip(this.battleShip.shipLength, shipListContainer);
+    this.populateShip(this.subMarine, shipListContainer);
+    this.populateShip(this.destroyer, shipListContainer);
+    this.populateShip(this.aircraftCarrier, shipListContainer);
+    this.populateShip(this.cruiser, shipListContainer);
+    this.populateShip(this.battleShip, shipListContainer);
   }
 
-  populateShip(shipLength, shipListContainer) {
+  populateShip(ship, shipListContainer) {
     const shipContainer = document.createElement("div");
     shipContainer.classList.add("ship-container");
-    shipContainer.setAttribute("id", `ship${shipLength}-container`);
-    shipContainer.style.gridTemplateColumns = `repeat(${shipLength}, 50px)`;
+    shipContainer.setAttribute("id", `ship${ship.shipLength}-container`);
+    shipContainer.style.gridTemplateColumns = `repeat(${ship.shipLength}, 50px)`;
     shipListContainer.appendChild(shipContainer);
 
     shipContainer.draggable = true;
 
-    for (let i = 0; i < shipLength; i++) {
+    for (let i = 0; i < ship.shipLength; i++) {
       const shipCell = document.createElement("div");
       shipCell.classList.add("ship-cell");
-      this.colorFromLength(shipLength, shipCell);
-      shipCell.setAttribute("id", `${shipLength}`);
+      this.colorFromLength(ship.shipLength, shipCell);
+      shipCell.setAttribute("id", `${ship.shipLength}`);
       shipContainer.appendChild(shipCell);
     }
+
+    this.recordShipCreate.push(ship);
   }
 
   dragShip() {
-    const playerCell = document.querySelectorAll(".player-cell");
-    const shipContainer = document.querySelectorAll(".ship-container");
+    const playerCells = document.querySelectorAll(".player-cell");
+    const shipListContainer = document.querySelector(".shiplist-container");
+    const shipContainers = document.querySelectorAll(".ship-container");
+    const aiBoardContainer = document.querySelector(".ai-board");
 
-    shipContainer.forEach((element) => {
-      element.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("text/shipContainerID", element.id);
-        e.dataTransfer.setData("text/shipCellRelativePos", e.offsetX);
+    shipContainers.forEach((shipContainer) => {
+      shipContainer.addEventListener("dragstart", (event) => {
+        event.dataTransfer.setData("text/shipContainerID", shipContainer.id);
+        event.dataTransfer.setData("text/shipCellRelativePos", event.offsetX);
       });
     });
 
-    playerCell.forEach((value, index) => {
-      value.addEventListener("dragover", (e) => {
-        e.preventDefault();
+    playerCells.forEach((cell, index) => {
+      cell.addEventListener("dragover", (event) => {
+        event.preventDefault();
       });
 
-      value.addEventListener("drop", (e) => {
-        const draggedElementID = e.dataTransfer.getData("text/shipContainerID");
-        const shipContainer = document.getElementById(draggedElementID);
-        const shipCell = shipContainer.querySelectorAll(".ship-cell");
+      cell.addEventListener("drop", (event) => {
+        const draggedElementID = event.dataTransfer.getData(
+          "text/shipContainerID"
+        );
+        const draggedShipContainer = document.getElementById(draggedElementID);
+        const shipCells = draggedShipContainer.querySelectorAll(".ship-cell");
 
         const shipCellRelativePos = parseInt(
-          e.dataTransfer.getData("text/shipCellRelativePos"),
+          event.dataTransfer.getData("text/shipCellRelativePos"),
           10
         );
 
-        const selectedIndex = Math.floor(shipCellRelativePos / 50);
-
-        const firstIndex = index - selectedIndex;
-        const lastIndex = firstIndex + shipCell.length;
+        const selectedGridIndex = Math.floor(shipCellRelativePos / 50);
+        const firstIndex = index - selectedGridIndex;
+        const lastIndex = firstIndex + shipCells.length;
         const shipLength = lastIndex - firstIndex;
 
-        //Row
         const firstRow = this.getRow(firstIndex);
         const lastRow =
           lastIndex % 10 === 0
             ? this.getRow(lastIndex - 1)
             : this.getRow(lastIndex);
 
+        //calculate Ai index
+        // let randomIndex;
+        // do {
+        //   randomIndex = Math.floor(Math.random() * 100);
+        // } while (recordAiShot.has(randomIndex) && recordAiShot.size < 100);
+        // recordAiShot.add(randomIndex);
+
         if (
+          //Duplicated?
+          //Check if first and last are in the same row
           firstRow === lastRow &&
-          this.isCellPlaced(playerCell, firstIndex, lastIndex) === true
+          this.isCellPlaced(playerCells, firstIndex, lastIndex)
         ) {
-          for (let i = firstIndex; i < firstIndex + shipCell.length; i++) {
-            playerCell[i].classList.add("placed");
-            this.colorFromLength(shipLength, playerCell[i]);
-            shipContainer.remove();
+          for (let i = firstIndex; i < firstIndex + shipCells.length; i++) {
+            playerCells[i].classList.add("placed");
+            this.colorFromLength(shipLength, playerCells[i]);
+            draggedShipContainer.remove();
           }
-          // this.placeShip(firstIndex)
+
+          // Use recordShip and placePlayerShip to place the ship on the actual array
+          for (let i = 0; i < this.recordShipCreate.length; i++) {
+            if (this.recordShipCreate[i].shipLength === shipCells.length) {
+              this.placePlayerShip(firstIndex, this.recordShipCreate[i]);
+            }
+          }
+        }
+
+        if (shipListContainer.childElementCount === 0) {
+          shipListContainer.remove();
+          aiBoardContainer.classList.remove("hide");
         }
       });
     });
   }
 
-  isCellPlaced(playerCell, firstIndex, lastIndex) {
-    for (let i = firstIndex; i < lastIndex; i++) {
-      if (playerCell[i].classList.contains("placed")) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  //only work horizontally for now
-  placeShip(startLocation, ship) {
+  placePlayerShip(startLocation, ship) {
+    //Input Validation
     if (startLocation < 0 || startLocation === null)
       return "Index cant be negative number or null";
 
+    //Calculate Start Row and Start Column
     let startRow = this.getRow(startLocation);
     let startCol = this.getCol(startLocation);
 
+    //Check if Index is Larger Than the Board:
     if (startRow > this.playerBoard.length)
       return "Index is larger than the board";
 
+    //Duplicated?
     if (startCol + ship.shipLength <= this.playerBoard.length) {
       //Store ship coordinate
       for (let k = 0; k < ship.shipLength; k++) {
@@ -231,7 +253,9 @@ export class gameboard {
     }
   }
 
-  receiveAttack(hitLocation, board, ship) {
+  placeAiShip() {}
+
+  receiveAttack(hitLocation, board) {
     let hitRow = this.getRow(hitLocation);
     let hitCol = this.getCol(hitLocation);
 
@@ -250,6 +274,15 @@ export class gameboard {
   }
 
   /*Helper method*/
+  isCellPlaced(cell, firstIndex, lastIndex) {
+    for (let i = firstIndex; i < lastIndex; i++) {
+      if (cell[i].classList.contains("placed")) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   getRow(index) {
     if (index >= 100) {
       return Math.floor(index / 10) - 10;
@@ -272,24 +305,19 @@ export class gameboard {
 
   colorFromLength(theLength, element) {
     if (theLength === 2) {
-      element.classList.add("Midnightblue");
+      element.classList.add("midnightblue");
     }
     if (theLength === 3) {
-      element.classList.add("Brown");
+      element.classList.add("goldenrod");
     }
     if (theLength === 4) {
-      element.classList.add("Cadetblue");
+      element.classList.add("darkviolet");
     }
     if (theLength === 5) {
-      element.classList.add("Palevioletred");
+      element.classList.add("palevioletred");
     }
     if (theLength === 6) {
-      element.classList.add("Crimson");
+      element.classList.add("chartreuse");
     }
-  }
-
-  //Get indexof
-  getShipCoordinate(ship, hitlocation) {
-    return ship.shipCoordinate.indexOf(hitlocation);
   }
 }
