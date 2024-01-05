@@ -5,7 +5,6 @@ export class Ship {
     } else {
       this.shipLength = -1;
     }
-    this.shipCoordinate = [];
   }
 
   hits() {

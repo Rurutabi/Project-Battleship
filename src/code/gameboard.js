@@ -2,7 +2,7 @@ import { Ship } from "../code/ship.js";
 import { Player } from "../code/player.js";
 
 export class gameboard {
-  //Ship
+  //Ship each ship will always have different length
   subMarine = new Ship(2);
   destroyer = new Ship(3);
   battleShip = new Ship(4);
@@ -23,15 +23,6 @@ export class gameboard {
     this.createShip();
     this.dragShip();
     this.playerTurn();
-
-    const index = 40;
-    const myShip = new Ship(4);
-
-    this.placeShip(index, myShip);
-    this.placeShip(58, this.subMarine);
-
-    console.log(this.recordShipLocation);
-    this.receiveAttack(45, this.playerBoard, myShip);
   }
 
   createArrayboard(playerBoard) {
@@ -120,14 +111,11 @@ export class gameboard {
     shipListContainer.classList.add("other-container");
     outerContainer.appendChild(shipListContainer);
 
-    this.populateShip(this.subMarine.shipLength.length, shipListContainer);
-    this.populateShip(this.destroyer.shipLength.length, shipListContainer);
-    this.populateShip(
-      this.aircraftCarrier.shipLength.length,
-      shipListContainer
-    );
-    this.populateShip(this.cruiser.shipLength.length, shipListContainer);
-    this.populateShip(this.battleShip.shipLength.length, shipListContainer);
+    this.populateShip(this.subMarine.shipLength, shipListContainer);
+    this.populateShip(this.destroyer.shipLength, shipListContainer);
+    this.populateShip(this.aircraftCarrier.shipLength, shipListContainer);
+    this.populateShip(this.cruiser.shipLength, shipListContainer);
+    this.populateShip(this.battleShip.shipLength, shipListContainer);
   }
 
   populateShip(shipLength, shipListContainer) {
@@ -229,7 +217,7 @@ export class gameboard {
         if (startCol <= 10) {
           this.recordShipLocation.push({
             shipLocation: startLocation,
-            shipLength: ship.shipLength,
+            ship: ship,
           });
           startLocation++;
           startCol++;
@@ -247,47 +235,18 @@ export class gameboard {
     let hitRow = this.getRow(hitLocation);
     let hitCol = this.getCol(hitLocation);
 
-    // if (board[hitRow][hitCol] !== -1) {
-    //   if (board[hitRow][hitCol] === 2) {
-    //     this.subMarine.hits();
-    //   }
-
-    //   if (board[hitRow][hitCol] === 3) {
-    //     this.destroyer.hits();
-    //   }
-
-    //   if (board[hitRow][hitCol] === 4) {
-    //     this.battleShip.hits();
-    //   }
-
-    //   if (board[hitRow][hitCol] === 5) {
-    //     this.cruiser.hits();
-    //   }
-
-    //   if (board[hitRow][hitCol] === 6) {
-    //     this.aircraftCarrier.hits();
-    //   }
-
-    //   //For testing if target is hitted by the bullet
-
-    //   if (ship !== undefined) {
-    //     console.log("test");
-    //     const recordLength = ship.shipLength;
-    //     if (board[hitRow][hitCol] === recordLength) {
-    //       ship.hits();
-    //     }
-    //   }
-
-    for (let i = 0; i < this.recordShipLocation.length; i++) {
-      if (hitLocation === this.recordShipLocation[i].shipLocation) {
+    if (board[hitRow][hitCol] !== -1) {
+      for (let i = 0; i < this.recordShipLocation.length; i++) {
+        if (hitLocation === this.recordShipLocation[i].shipLocation) {
+          this.recordShipLocation[i].ship.hits();
+        }
       }
-    }
 
-    // If a user shoots at this grid location, mark it as -1 to indicate a shot.
-    board[hitRow][hitCol] = -1;
-    // } else {
-    //   return "Shot at the same locaiton";
-    // }
+      // If a user shoots at this grid location, mark it as -1 to indicate a shot.
+      board[hitRow][hitCol] = -1;
+    } else {
+      return "Shot at the same locaiton";
+    }
   }
 
   /*Helper method*/

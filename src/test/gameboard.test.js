@@ -28,7 +28,7 @@ describe("Testing game board", () => {
     const game = new gameboard(10);
     const row = game.getRow(index);
     game.placeShip(index, myShip);
-    game.receiveAttack(42, game.playerBoard, myShip);
+    game.receiveAttack(42, game.playerBoard);
     expect(myShip.shipLength).toEqual(3);
     expect(game.playerBoard[row]).toEqual([4, 4, -1, 4, 0, 0, 0, 0, 0, 0]);
   });
@@ -38,8 +38,8 @@ describe("Testing game board", () => {
     const myShip = new Ship(2);
     const game = new gameboard(10);
     game.placeShip(index, myShip);
-    game.receiveAttack(40, game.playerBoard, myShip);
-    game.receiveAttack(41, game.playerBoard, myShip);
+    game.receiveAttack(40, game.playerBoard);
+    game.receiveAttack(41, game.playerBoard);
     expect(myShip.shipLength).toEqual("sunken ship");
   });
 
@@ -49,7 +49,7 @@ describe("Testing game board", () => {
     const game = new gameboard(10);
     const row = game.getRow(index);
     game.placeShip(index, myShip);
-    game.receiveAttack(45, game.playerBoard, myShip);
+    game.receiveAttack(45, game.playerBoard);
     expect(myShip.shipLength).toEqual(4);
     expect(game.playerBoard[row]).toEqual([4, 4, 4, 4, 0, -1, 0, 0, 0, 0]);
   });
@@ -59,8 +59,8 @@ describe("Testing game board", () => {
     const myShip = new Ship(4);
     const game = new gameboard(10);
     game.placeShip(index, myShip);
-    game.receiveAttack(45, game.playerBoard, myShip);
-    const sameLocation = game.receiveAttack(45, game.playerBoard, myShip);
+    game.receiveAttack(45, game.playerBoard);
+    const sameLocation = game.receiveAttack(45, game.playerBoard);
     expect(sameLocation).toEqual("Shot at the same locaiton");
   });
 });
