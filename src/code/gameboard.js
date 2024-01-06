@@ -23,6 +23,7 @@ export class gameboard {
     this.createBoard();
     this.createShip();
     this.dragShip();
+    this.placeAiShip();
     this.handleTurnClick();
   }
 
@@ -183,13 +184,7 @@ export class gameboard {
             ? this.getRow(lastIndex - 1)
             : this.getRow(lastIndex);
 
-        //calculate Ai index
-        // let randomIndex;
-        // do {
-        //   randomIndex = Math.floor(Math.random() * 100);
-        // } while (recordAiShot.has(randomIndex) && recordAiShot.size < 100);
-        // recordAiShot.add(randomIndex);
-
+        //PLayer
         if (
           //Duplicated?
           //Check if first and last are in the same row
@@ -210,12 +205,21 @@ export class gameboard {
           }
         }
 
-        if (shipListContainer.childElementCount === 0) {
-          shipListContainer.remove();
-          aiBoardContainer.classList.remove("hide");
-        }
+        //Ai
+        if (firstRow)
+          if (shipListContainer.childElementCount === 0) {
+            shipListContainer.remove();
+            aiBoardContainer.classList.remove("hide");
+          }
       });
     });
+  }
+
+  placeAiShip(shipLength) {
+    const recordAiShip = [];
+    let randomIndex;
+
+    randomIndex = Math.floor(Math.random() * 100);
   }
 
   placePlayerShip(startLocation, ship) {
@@ -252,8 +256,6 @@ export class gameboard {
       return "out of bound";
     }
   }
-
-  placeAiShip() {}
 
   receiveAttack(hitLocation, board) {
     let hitRow = this.getRow(hitLocation);
