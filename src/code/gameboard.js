@@ -23,7 +23,6 @@ export class gameboard {
     this.createBoard();
     this.createShip();
     this.dragShip();
-    this.placeAiShip();
     this.handleTurnClick();
   }
 
@@ -178,17 +177,12 @@ export class gameboard {
         const lastIndex = firstIndex + shipCells.length;
         const shipLength = lastIndex - firstIndex;
 
-        const firstRow = this.getRow(firstIndex);
-        const lastRow =
-          lastIndex % 10 === 0
-            ? this.getRow(lastIndex - 1)
-            : this.getRow(lastIndex);
-
+        const startCol = this.getCol(firstIndex);
         //PLayer
         if (
           //Duplicated?
           //Check if first and last are in the same row
-          firstRow === lastRow &&
+          this.inSameRow(startCol, shipLength, this.playerBoard) === true &&
           this.isCellPlaced(playerCells, firstIndex, lastIndex)
         ) {
           for (let i = firstIndex; i < firstIndex + shipCells.length; i++) {
@@ -200,29 +194,39 @@ export class gameboard {
           // Use recordShip and placePlayerShip to place the ship on the actual array
           for (let i = 0; i < this.recordShipCreate.length; i++) {
             if (this.recordShipCreate[i].shipLength === shipCells.length) {
-              this.placePlayerShip(firstIndex, this.recordShipCreate[i]);
+              this.placePlayerShip(
+                firstIndex,
+                this.recordShipCreate[i],
+                this.playerBoard
+              );
             }
           }
         }
 
         //Ai
-        if (firstRow)
-          if (shipListContainer.childElementCount === 0) {
-            shipListContainer.remove();
-            aiBoardContainer.classList.remove("hide");
-          }
+        // if (firstRow)
+        //   if (shipListContainer.childElementCount === 0) {
+        //     shipListContainer.remove();
+        //     aiBoardContainer.classList.remove("hide");
+        //   }
       });
     });
   }
 
   placeAiShip(shipLength) {
-    const recordAiShip = [];
+    const recordAiShip = new Set();
     let randomIndex;
 
-    randomIndex = Math.floor(Math.random() * 100);
+    do {
+      randomIndex = Math.floor(Math.random() * 100);
+    } while (recordAiShip.has(randomIndex));
+
+    recordAiShip.add(randomIndex);
+
+    lastIndex = randomIndex + shipLength;
   }
 
-  placePlayerShip(startLocation, ship) {
+  placePlayerShip(startLocation, ship, gameboard) {
     //Input Validation
     if (startLocation < 0 || startLocation === null)
       return "Index cant be negative number or null";
@@ -232,14 +236,13 @@ export class gameboard {
     let startCol = this.getCol(startLocation);
 
     //Check if Index is Larger Than the Board:
-    if (startRow > this.playerBoard.length)
-      return "Index is larger than the board";
+    if (startRow > gameboard.length) return "Index is larger than the board";
 
     //Duplicated?
-    if (startCol + ship.shipLength <= this.playerBoard.length) {
+    if (this.inSameRow(startCol, ship.shipLength, gameboard) === true) {
       //Store ship coordinate
       for (let k = 0; k < ship.shipLength; k++) {
-        this.playerBoard[startRow][startCol] = ship.shipLength;
+        gameboard[startRow][startCol] = ship.shipLength;
         if (startCol <= 10) {
           this.recordShipLocation.push({
             shipLocation: startLocation,
@@ -276,6 +279,15 @@ export class gameboard {
   }
 
   /*Helper method*/
+
+  inSameRow(startIndex, shipLength, gameboard) {
+    if (startIndex + shipLength <= gameboard.length) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   isCellPlaced(cell, firstIndex, lastIndex) {
     for (let i = firstIndex; i < lastIndex; i++) {
       if (cell[i].classList.contains("placed")) {
