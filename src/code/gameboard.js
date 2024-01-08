@@ -24,6 +24,8 @@ export class gameboard {
     this.createShip();
     this.dragShip();
     this.handleTurnClick();
+    console.log(this.playerBoard);
+    console.log(this.recordShipCreate);
   }
 
   createArrayboard(playerBoard) {
@@ -144,9 +146,7 @@ export class gameboard {
 
   dragShip() {
     const playerCells = document.querySelectorAll(".player-cell");
-    const shipListContainer = document.querySelector(".shiplist-container");
     const shipContainers = document.querySelectorAll(".ship-container");
-    const aiBoardContainer = document.querySelector(".ai-board");
 
     shipContainers.forEach((shipContainer) => {
       shipContainer.addEventListener("dragstart", (event) => {
@@ -174,56 +174,54 @@ export class gameboard {
 
         const selectedGridIndex = Math.floor(shipCellRelativePos / 50);
         const firstIndex = index - selectedGridIndex;
-        const lastIndex = firstIndex + shipCells.length;
-        const shipLength = lastIndex - firstIndex;
 
         const startCol = this.getCol(firstIndex);
+
         //PLayer
         if (
           //Duplicated?
           //Check if first and last are in the same row
-          this.inSameRow(startCol, shipLength, this.playerBoard) === true &&
-          this.isCellPlaced(playerCells, firstIndex, lastIndex)
+          this.inSameRow(startCol, shipCells.length, this.playerBoard) ===
+            true &&
+          this.isCellPlaced(firstIndex, shipCells.length, this.playerBoard) ===
+            true
         ) {
           for (let i = firstIndex; i < firstIndex + shipCells.length; i++) {
             playerCells[i].classList.add("placed");
-            this.colorFromLength(shipLength, playerCells[i]);
+            this.colorFromLength(shipCells.length, playerCells[i]);
             draggedShipContainer.remove();
           }
 
           // Use recordShip and placePlayerShip to place the ship on the actual array
-          for (let i = 0; i < this.recordShipCreate.length; i++) {
-            if (this.recordShipCreate[i].shipLength === shipCells.length) {
-              this.placePlayerShip(
-                firstIndex,
-                this.recordShipCreate[i],
-                this.playerBoard
-              );
-            }
-          }
+          this.pushShipLengthToArray(firstIndex, shipCells, this.playerBoard);
+
+          let aiFirstIndex;
+          let aiCol;
+
+          do {
+            aiFirstIndex = Math.floor(Math.random() * 100);
+            aiCol = this.getCol(aiFirstIndex);
+          } while (
+            this.inSameRow(aiCol, shipCells.length, this.aiBoard) === false ||
+            this.isCellPlaced(aiFirstIndex, shipCells.length, this.aiBoard) ===
+              false
+          );
+
+          this.pushShipLengthToArray(aiFirstIndex, shipCells, this.aiBoard);
+          console.log(this.aiBoard);
         }
 
         //Ai
-        // if (firstRow)
-        //   if (shipListContainer.childElementCount === 0) {
-        //     shipListContainer.remove();
-        //     aiBoardContainer.classList.remove("hide");
-        //   }
       });
     });
   }
 
-  placeAiShip(shipLength) {
-    const recordAiShip = new Set();
-    let randomIndex;
-
-    do {
-      randomIndex = Math.floor(Math.random() * 100);
-    } while (recordAiShip.has(randomIndex));
-
-    recordAiShip.add(randomIndex);
-
-    lastIndex = randomIndex + shipLength;
+  pushShipLengthToArray(firstIndex, shipCells, board) {
+    for (let i = 0; i < this.recordShipCreate.length; i++) {
+      if (this.recordShipCreate[i].shipLength === shipCells.length) {
+        this.placePlayerShip(firstIndex, this.recordShipCreate[i], board);
+      }
+    }
   }
 
   placePlayerShip(startLocation, ship, gameboard) {
@@ -288,12 +286,17 @@ export class gameboard {
     }
   }
 
-  isCellPlaced(cell, firstIndex, lastIndex) {
-    for (let i = firstIndex; i < lastIndex; i++) {
-      if (cell[i].classList.contains("placed")) {
+  isCellPlaced(firstIndex, shipCellslength, gameboard) {
+    const row = this.getRow(firstIndex);
+    const col = this.getCol(firstIndex);
+
+    console.log(col);
+    for (let i = col; i < col + shipCellslength; i++) {
+      if (gameboard[row][i] !== 0) {
         return false;
       }
     }
+
     return true;
   }
 
