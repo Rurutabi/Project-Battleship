@@ -2,20 +2,30 @@ import { Ship } from "../code/ship.js";
 import { Player } from "../code/player.js";
 
 export class gameboard {
-  //Ship each ship will always have different length
-  subMarine = new Ship(2);
-  destroyer = new Ship(3);
-  battleShip = new Ship(4);
-  cruiser = new Ship(5);
-  aircraftCarrier = new Ship(6);
-  draggedShipElement = null;
+  //Player Ship
+  playerSubmarine = new Ship(2);
+  playerDestoryer = new Ship(3);
+  playerBattleShip = new Ship(4);
+  playerCruiser = new Ship(5);
+  playerAircraftCarrier = new Ship(6);
+
+  //Ai Ship
+  aiSubmarine = new Ship(2);
+  aiDestoryer = new Ship(3);
+  aiBattleShip = new Ship(4);
+  aiCruiser = new Ship(5);
+  aiAircraftCarrier = new Ship(6);
 
   //PlayerplaceShip
   player = new Player(true);
   ai = new Player(false);
 
   recordShipCreate = [];
-  recordShipLocation = [];
+  recordPlayerShipLocation = [];
+  recordAiShipLocation = [];
+  recordAiShip = [];
+
+  checkWinner = false;
 
   constructor(playerBoard, aiBoard) {
     this.playerBoard = this.createArrayboard(playerBoard);
@@ -39,40 +49,54 @@ export class gameboard {
 
     aiCell.forEach((value, index) => {
       value.addEventListener("click", () => {
-        if (
-          !value.classList.contains("aquamarine") &&
-          !value.classList.contains("red")
-        ) {
-          //PLayer Attack
+        if (this.checkWinner === false) {
+          if (
+            !value.classList.contains("aquamarine") &&
+            !value.classList.contains("red")
+          ) {
+            //PLayer Attack
 
-          const playeyRow = this.getRow(index);
-          const playerCol = this.getCol(index);
+            const playeyRow = this.getRow(index);
+            const playerCol = this.getCol(index);
 
-          if (this.aiBoard[playeyRow][playerCol] === 0) {
-            value.classList.add("aquamarine");
-          } else {
-            value.classList.add("red");
+            if (this.aiBoard[playeyRow][playerCol] === 0) {
+              value.classList.add("aquamarine");
+            } else {
+              value.classList.add("red");
+            }
+
+            this.receiveAttack(index, this.aiBoard, this.recordAiShipLocation);
+
+            //Ai Attack
+            let randomIndex;
+            do {
+              randomIndex = Math.floor(Math.random() * 100);
+            } while (recordAiShot.has(randomIndex) && recordAiShot.size < 100);
+            recordAiShot.add(randomIndex);
+
+            const randomRow = this.getRow(randomIndex);
+            const randomCol = this.getCol(randomIndex);
+
+            if (this.playerBoard[randomRow][randomCol] === 0) {
+              playerCell[randomIndex].classList.add("aquamarine");
+            } else {
+              playerCell[randomIndex].classList.add("red");
+            }
+
+            this.receiveAttack(
+              randomIndex,
+              this.playerBoard,
+              this.recordPlayerShipLocation
+            );
+
+            if (this.playerWinCondition() === true) {
+              console.log("player Win");
+              this.checkWinner = true;
+            } else if (this.aiWinCondition() === true) {
+              console.log("ai Win");
+              this.checkWinner = true;
+            }
           }
-
-          this.receiveAttack(index, this.aiBoard);
-
-          //Ai Attack
-          let randomIndex;
-          do {
-            randomIndex = Math.floor(Math.random() * 100);
-          } while (recordAiShot.has(randomIndex) && recordAiShot.size < 100);
-          recordAiShot.add(randomIndex);
-
-          const randomRow = this.getRow(randomIndex);
-          const randomCol = this.getCol(randomIndex);
-
-          if (this.playerBoard[randomRow][randomCol] === 0) {
-            playerCell[randomIndex].classList.add("aquamarine");
-          } else {
-            playerCell[randomIndex].classList.add("red");
-          }
-
-          this.receiveAttack(randomIndex, this.playerBoard);
         }
       });
     });
@@ -124,11 +148,17 @@ export class gameboard {
     shipListContainer.classList.add("shiplist-container");
     outerContainer.appendChild(shipListContainer);
 
-    this.populateShip(this.subMarine, shipListContainer);
-    this.populateShip(this.destroyer, shipListContainer);
-    this.populateShip(this.aircraftCarrier, shipListContainer);
-    this.populateShip(this.cruiser, shipListContainer);
-    this.populateShip(this.battleShip, shipListContainer);
+    this.populateShip(this.playerSubmarine, shipListContainer);
+    this.populateShip(this.playerDestoryer, shipListContainer);
+    this.populateShip(this.playerAircraftCarrier, shipListContainer);
+    this.populateShip(this.playerCruiser, shipListContainer);
+    this.populateShip(this.playerBattleShip, shipListContainer);
+
+    this.recordAiShip.push(this.aiAircraftCarrier);
+    this.recordAiShip.push(this.aiBattleShip);
+    this.recordAiShip.push(this.aiCruiser);
+    this.recordAiShip.push(this.aiDestoryer);
+    this.recordAiShip.push(this.aiSubmarine);
   }
 
   populateShip(ship, shipListContainer) {
@@ -202,7 +232,13 @@ export class gameboard {
           }
 
           // Use recordShip and placeShip to place the ship on the actual array
-          this.pushShipLengthToArray(firstIndex, shipCells, this.playerBoard);
+          this.pushShipLengthToArray(
+            firstIndex,
+            shipCells,
+            this.playerBoard,
+            this.recordShipCreate,
+            "player"
+          );
 
           let aiFirstIndex;
           let aiCol;
@@ -216,7 +252,13 @@ export class gameboard {
               false
           );
 
-          this.pushShipLengthToArray(aiFirstIndex, shipCells, this.aiBoard);
+          this.pushShipLengthToArray(
+            aiFirstIndex,
+            shipCells,
+            this.aiBoard,
+            this.recordAiShip,
+            "ai"
+          );
         }
 
         //Ai board appear when user move every ships to player boards
@@ -224,19 +266,21 @@ export class gameboard {
           shipListContainer.remove();
           aiBoardContainer.classList.remove("hide");
         }
+
+        console.log(this.aiBoard);
       });
     });
   }
 
-  pushShipLengthToArray(firstIndex, shipCells, board) {
-    for (let i = 0; i < this.recordShipCreate.length; i++) {
-      if (this.recordShipCreate[i].shipLength === shipCells.length) {
-        this.placeShip(firstIndex, this.recordShipCreate[i], board);
+  pushShipLengthToArray(firstIndex, shipCells, board, recordShip, playerType) {
+    for (let i = 0; i < recordShip.length; i++) {
+      if (recordShip[i].shipLength === shipCells.length) {
+        this.placeShip(firstIndex, recordShip[i], board, playerType);
       }
     }
   }
 
-  placeShip(startLocation, ship, gameboard) {
+  placeShip(startLocation, ship, gameboard, playerType) {
     //Input Validation
     if (startLocation < 0 || startLocation === null)
       return "Index cant be negative number or null";
@@ -254,10 +298,19 @@ export class gameboard {
       for (let k = 0; k < ship.shipLength; k++) {
         gameboard[startRow][startCol] = ship.shipLength;
         if (startCol <= 10) {
-          this.recordShipLocation.push({
-            shipLocation: startLocation,
-            ship: ship,
-          });
+          //Fix recordPlayerShipLocation
+
+          if (playerType === "player") {
+            this.recordPlayerShipLocation.push({
+              shipLocation: startLocation,
+              ship: ship,
+            });
+          } else if (playerType === "ai") {
+            this.recordAiShipLocation.push({
+              shipLocation: startLocation,
+              ship: ship,
+            });
+          }
           startLocation++;
           startCol++;
         } else {
@@ -270,14 +323,14 @@ export class gameboard {
     }
   }
 
-  receiveAttack(hitLocation, board) {
+  receiveAttack(hitLocation, board, recordLocation) {
     let hitRow = this.getRow(hitLocation);
     let hitCol = this.getCol(hitLocation);
 
-    if (board[hitRow][hitCol] !== -1) {
-      for (let i = 0; i < this.recordShipLocation.length; i++) {
-        if (hitLocation === this.recordShipLocation[i].shipLocation) {
-          this.recordShipLocation[i].ship.hits();
+    if (board[hitRow][hitCol] !== 0 && board[hitRow][hitCol] !== -1) {
+      for (let i = 0; i < recordLocation.length; i++) {
+        if (hitLocation === recordLocation[i].shipLocation) {
+          recordLocation[i].ship.hits();
         }
       }
 
@@ -288,7 +341,17 @@ export class gameboard {
     }
   }
 
-  /*Helper method*/
+  isAllShipsSunk(ships) {
+    return ships.every((ship) => ship.shipLength === "sunken ship");
+  }
+
+  playerWinCondition() {
+    return this.isAllShipsSunk(this.recordAiShip);
+  }
+
+  aiWinCondition() {
+    return this.isAllShipsSunk(this.recordAiShip);
+  }
 
   inSameRow(startIndex, shipLength, gameboard) {
     if (startIndex + shipLength <= gameboard.length) {
@@ -311,6 +374,7 @@ export class gameboard {
     return true;
   }
 
+  /*Helper method*/
   getRow(index) {
     if (index >= 100) {
       return Math.floor(index / 10) - 10;
@@ -321,14 +385,6 @@ export class gameboard {
 
   getCol(index) {
     return index % 10;
-  }
-
-  isWithinBound(row, col) {
-    if (row > -1 && row < 11 && col > -1 && col < 11) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   colorFromLength(theLength, element) {
