@@ -1,5 +1,4 @@
 import { Ship } from "../code/ship.js";
-import { Player } from "../code/player.js";
 
 export class gameboard {
   //Player Ship
@@ -16,10 +15,6 @@ export class gameboard {
   aiCruiser = new Ship(5);
   aiAircraftCarrier = new Ship(6);
 
-  //PlayerplaceShip
-  player = new Player(true);
-  ai = new Player(false);
-
   recordShipCreate = [];
   recordPlayerShipLocation = [];
   recordAiShipLocation = [];
@@ -34,6 +29,11 @@ export class gameboard {
     this.createShip();
     this.dragShip();
     this.handleTurnClick();
+    // const index = 42;
+    // const myShip = new Ship(4);
+
+    // this.placeShip(index, myShip, this.playerBoard, "player");
+    // console.log(this.playerBoard);
   }
 
   createArrayboard(playerBoard) {
@@ -237,7 +237,7 @@ export class gameboard {
             shipCells,
             this.playerBoard,
             this.recordShipCreate,
-            "player"
+            this.recordPlayerShipLocation
           );
 
           let aiFirstIndex;
@@ -257,7 +257,7 @@ export class gameboard {
             shipCells,
             this.aiBoard,
             this.recordAiShip,
-            "ai"
+            this.recordAiShipLocation
           );
         }
 
@@ -272,15 +272,21 @@ export class gameboard {
     });
   }
 
-  pushShipLengthToArray(firstIndex, shipCells, board, recordShip, playerType) {
+  pushShipLengthToArray(
+    firstIndex,
+    shipCells,
+    board,
+    recordShip,
+    recordLocation
+  ) {
     for (let i = 0; i < recordShip.length; i++) {
       if (recordShip[i].shipLength === shipCells.length) {
-        this.placeShip(firstIndex, recordShip[i], board, playerType);
+        this.placeShip(firstIndex, recordShip[i], board, recordLocation);
       }
     }
   }
 
-  placeShip(startLocation, ship, gameboard, playerType) {
+  placeShip(startLocation, ship, gameboard, recordLocation) {
     //Input Validation
     if (startLocation < 0 || startLocation === null)
       return "Index cant be negative number or null";
@@ -299,18 +305,11 @@ export class gameboard {
         gameboard[startRow][startCol] = ship.shipLength;
         if (startCol <= 10) {
           //Fix recordPlayerShipLocation
+          recordLocation.push({
+            shipLocation: startLocation,
+            ship: ship,
+          });
 
-          if (playerType === "player") {
-            this.recordPlayerShipLocation.push({
-              shipLocation: startLocation,
-              ship: ship,
-            });
-          } else if (playerType === "ai") {
-            this.recordAiShipLocation.push({
-              shipLocation: startLocation,
-              ship: ship,
-            });
-          }
           startLocation++;
           startCol++;
         } else {
@@ -326,6 +325,8 @@ export class gameboard {
   receiveAttack(hitLocation, board, recordLocation) {
     let hitRow = this.getRow(hitLocation);
     let hitCol = this.getCol(hitLocation);
+
+    if (board[hitRow][hitCol] === 0) board[hitRow][hitCol] = -1;
 
     if (board[hitRow][hitCol] !== 0 && board[hitRow][hitCol] !== -1) {
       for (let i = 0; i < recordLocation.length; i++) {

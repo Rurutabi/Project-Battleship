@@ -8,9 +8,10 @@ describe("Testing game board", () => {
   test("check if we can place ship", () => {
     const index = 42;
     const myShip = new Ship(4);
-    const game = new gameboard(10);
+    const game = new gameboard(10, 10);
     const row = game.getRow(index);
-    game.placeShip(index, myShip);
+    const recordLocation = [];
+    game.placeShip(index, myShip, game.playerBoard, recordLocation);
     expect(game.playerBoard[row]).toEqual([0, 0, 4, 4, 4, 4, 0, 0, 0, 0]);
   });
 
@@ -18,7 +19,13 @@ describe("Testing game board", () => {
     const index = 59;
     const myShip = new Ship(2);
     const game = new gameboard(10);
-    const returnValue = game.placeShip(index, myShip);
+    const recordLocation = [];
+    const returnValue = game.placeShip(
+      index,
+      myShip,
+      game.playerBoard,
+      recordLocation
+    );
     expect(returnValue).toBe("out of bound");
   });
 
@@ -27,8 +34,9 @@ describe("Testing game board", () => {
     const myShip = new Ship(4);
     const game = new gameboard(10);
     const row = game.getRow(index);
-    game.placeShip(index, myShip);
-    game.receiveAttack(42, game.playerBoard);
+    const recordLocation = [];
+    game.placeShip(index, myShip, game.playerBoard, recordLocation);
+    game.receiveAttack(42, game.playerBoard, recordLocation);
     expect(myShip.shipLength).toEqual(3);
     expect(game.playerBoard[row]).toEqual([4, 4, -1, 4, 0, 0, 0, 0, 0, 0]);
   });
@@ -37,9 +45,10 @@ describe("Testing game board", () => {
     const index = 40;
     const myShip = new Ship(2);
     const game = new gameboard(10);
-    game.placeShip(index, myShip);
-    game.receiveAttack(40, game.playerBoard);
-    game.receiveAttack(41, game.playerBoard);
+    const recordLocation = [];
+    game.placeShip(index, myShip, game.playerBoard, recordLocation);
+    game.receiveAttack(40, game.playerBoard, recordLocation);
+    game.receiveAttack(41, game.playerBoard, recordLocation);
     expect(myShip.shipLength).toEqual("sunken ship");
   });
 
@@ -48,8 +57,9 @@ describe("Testing game board", () => {
     const myShip = new Ship(4);
     const game = new gameboard(10);
     const row = game.getRow(index);
-    game.placeShip(index, myShip);
-    game.receiveAttack(45, game.playerBoard);
+    const recordLocation = [];
+    game.placeShip(index, myShip, game.playerBoard, recordLocation);
+    game.receiveAttack(45, game.playerBoard, recordLocation);
     expect(myShip.shipLength).toEqual(4);
     expect(game.playerBoard[row]).toEqual([4, 4, 4, 4, 0, -1, 0, 0, 0, 0]);
   });
@@ -58,9 +68,28 @@ describe("Testing game board", () => {
     const index = 40;
     const myShip = new Ship(4);
     const game = new gameboard(10);
-    game.placeShip(index, myShip);
-    game.receiveAttack(45, game.playerBoard);
-    const sameLocation = game.receiveAttack(45, game.playerBoard);
+    const recordLocation = [];
+    game.placeShip(index, myShip, game.playerBoard, recordLocation);
+    game.receiveAttack(45, game.playerBoard, recordLocation);
+    const sameLocation = game.receiveAttack(
+      45,
+      game.playerBoard,
+      recordLocation
+    );
     expect(sameLocation).toEqual("Shot at the same locaiton");
+  });
+
+  test("Check if cell is already placed", () => {
+    const index = 40;
+    const myShip = new Ship(4);
+    const game = new gameboard(10);
+    const recordLocation = [];
+    game.placeShip(index, myShip, game.playerBoard, recordLocation);
+    const checkPlaced = game.isCellPlaced(
+      45,
+      myShip.shipLength,
+      game.playerBoard
+    );
+    expect(checkPlaced).toEqual(true);
   });
 });
