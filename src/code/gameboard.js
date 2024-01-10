@@ -15,17 +15,18 @@ export class gameboard {
   aiCruiser = new Ship(5);
   aiAircraftCarrier = new Ship(6);
 
-  recordShipCreate = [];
+  //Record Ship and Location
+  recordPlayerShip = [];
   recordPlayerShipLocation = [];
-  recordAiShipLocation = [];
   recordAiShip = [];
+  recordAiShipLocation = [];
 
   checkWinner = false;
 
   constructor(playerBoard, aiBoard) {
     this.playerBoard = this.createArrayboard(playerBoard);
     this.aiBoard = this.createArrayboard(aiBoard);
-    this.createBoard();
+    this.createUI();
     this.createShip();
     this.dragShip();
     this.handleTurnClick();
@@ -103,24 +104,40 @@ export class gameboard {
   }
 
   //Create user interface
-  createBoard() {
-    // Create a div element
+  createUI() {
     const outerContainer = document.createElement("div");
     outerContainer.classList.add("container");
     document.body.appendChild(outerContainer);
 
+    const headerContainer = document.createElement("div");
+    headerContainer.classList.add("header-container");
+    outerContainer.appendChild(headerContainer);
+    const title = document.createElement("h1");
+    title.classList.add("title");
+    title.textContent = "BattleShip";
+    headerContainer.appendChild(title);
+
+    const bodyContainer = document.createElement("div");
+    bodyContainer.classList.add("body-container");
+    outerContainer.appendChild(bodyContainer);
     //Create a player board
     const playerBoardContainer = document.createElement("div");
     playerBoardContainer.classList.add("board-container", "player-board");
-    outerContainer.appendChild(playerBoardContainer);
+    bodyContainer.appendChild(playerBoardContainer);
 
     //Create an ai player
     const aiBoardContainer = document.createElement("div");
     aiBoardContainer.classList.add("board-container", "ai-board");
-    outerContainer.appendChild(aiBoardContainer);
+    bodyContainer.appendChild(aiBoardContainer);
 
     aiBoardContainer.classList.add("hide");
 
+    const footer = document.createElement("footer");
+    const footerText = document.createElement("p");
+    footerText.textContent = "Create by Siraphop Sompamit";
+    outerContainer.appendChild(footer);
+
+    footer.appendChild(footerText);
     this.populateBoard(playerBoardContainer);
     this.populateBoard(aiBoardContainer);
   }
@@ -143,7 +160,7 @@ export class gameboard {
   }
 
   createShip() {
-    const outerContainer = document.querySelector(".container");
+    const outerContainer = document.querySelector(".body-container");
     const shipListContainer = document.createElement("div");
     shipListContainer.classList.add("shiplist-container");
     outerContainer.appendChild(shipListContainer);
@@ -178,7 +195,7 @@ export class gameboard {
       shipContainer.appendChild(shipCell);
     }
 
-    this.recordShipCreate.push(ship);
+    this.recordPlayerShip.push(ship);
   }
 
   dragShip() {
@@ -236,7 +253,7 @@ export class gameboard {
             firstIndex,
             shipCells,
             this.playerBoard,
-            this.recordShipCreate,
+            this.recordPlayerShip,
             this.recordPlayerShipLocation
           );
 
@@ -266,8 +283,6 @@ export class gameboard {
           shipListContainer.remove();
           aiBoardContainer.classList.remove("hide");
         }
-
-        console.log(this.aiBoard);
       });
     });
   }
@@ -351,7 +366,7 @@ export class gameboard {
   }
 
   aiWinCondition() {
-    return this.isAllShipsSunk(this.recordAiShip);
+    return this.isAllShipsSunk(this.recordPlayerShip);
   }
 
   inSameRow(startIndex, shipLength, gameboard) {
@@ -371,7 +386,6 @@ export class gameboard {
         return false;
       }
     }
-
     return true;
   }
 
