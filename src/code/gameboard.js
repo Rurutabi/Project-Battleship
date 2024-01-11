@@ -21,8 +21,6 @@ export class gameboard {
   recordAiShip = [];
   recordAiShipLocation = [];
 
-  checkWinner = false;
-
   constructor(playerBoard, aiBoard) {
     this.playerBoard = this.createArrayboard(playerBoard);
     this.aiBoard = this.createArrayboard(aiBoard);
@@ -30,11 +28,6 @@ export class gameboard {
     this.createShip();
     this.dragShip();
     this.handleTurnClick();
-    // const index = 42;
-    // const myShip = new Ship(4);
-
-    // this.placeShip(index, myShip, this.playerBoard, "player");
-    // console.log(this.playerBoard);
   }
 
   createArrayboard(playerBoard) {
@@ -47,10 +40,10 @@ export class gameboard {
     const aiCell = document.querySelectorAll(".ai-cell");
     const playerCell = document.querySelectorAll(".player-cell");
     const recordAiShot = new Set();
-
+    let checkWinner = false;
     aiCell.forEach((value, index) => {
       value.addEventListener("click", () => {
-        if (this.checkWinner === false) {
+        if (checkWinner === false) {
           if (
             !value.classList.contains("aquamarine") &&
             !value.classList.contains("red")
@@ -92,10 +85,10 @@ export class gameboard {
 
             if (this.playerWinCondition() === true) {
               console.log("player Win");
-              this.checkWinner = true;
+              checkWinner = true;
             } else if (this.aiWinCondition() === true) {
               console.log("ai Win");
-              this.checkWinner = true;
+              checkWinner = true;
             }
           }
         }
@@ -112,6 +105,7 @@ export class gameboard {
     const headerContainer = document.createElement("div");
     headerContainer.classList.add("header-container");
     outerContainer.appendChild(headerContainer);
+
     const title = document.createElement("h1");
     title.classList.add("title");
     title.textContent = "BattleShip";
@@ -230,7 +224,6 @@ export class gameboard {
 
         const selectedGridIndex = Math.floor(shipCellRelativePos / 50);
         const firstIndex = index - selectedGridIndex;
-
         const startCol = this.getCol(firstIndex);
 
         //PLayer
