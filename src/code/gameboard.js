@@ -21,6 +21,10 @@ export class gameboard {
   recordAiShip = [];
   recordAiShipLocation = [];
 
+  recordfirstAiAttack = [];
+  otherAiAttack = [];
+  recordAttackedShip = [];
+
   constructor(playerBoard, aiBoard) {
     this.playerBoard = this.createArrayboard(playerBoard);
     this.aiBoard = this.createArrayboard(aiBoard);
@@ -28,6 +32,7 @@ export class gameboard {
     this.createShip();
     this.dragShip();
     this.handleTurnClick();
+    console.log(this.recordPlayerShip);
   }
 
   createArrayboard(playerBoard) {
@@ -40,6 +45,7 @@ export class gameboard {
     const aiCell = document.querySelectorAll(".ai-cell");
     const playerCell = document.querySelectorAll(".player-cell");
     const recordAiShot = new Set();
+    let counting = 0;
     let checkWinner = false;
     aiCell.forEach((value, index) => {
       value.addEventListener("click", () => {
@@ -62,10 +68,43 @@ export class gameboard {
             this.receiveAttack(index, this.aiBoard, this.recordAiShipLocation);
 
             //Ai Attack
+
             let randomIndex;
-            do {
-              randomIndex = Math.floor(Math.random() * 100);
-            } while (recordAiShot.has(randomIndex) && recordAiShot.size < 100);
+
+            if (this.recordAttackedShip.length === 0) {
+              do {
+                randomIndex = Math.floor(Math.random() * 100);
+              } while (
+                recordAiShot.has(randomIndex) &&
+                recordAiShot.size < 100
+              );
+            } else {
+              // const row = this.getRow(randomIndex);
+              // const col = this.getCol(randomIndex);
+              let right = true;
+              let left = false;
+
+              randomIndex = this.otherAiAttack.pop();
+              console.log(randomIndex);
+              if (right === true) {
+                randomIndex++;
+                if (
+                  this.playerBoard[this.getRow(randomIndex)][
+                    this.getCol(randomIndex)
+                  ] === 0
+                ) {
+                  this.otherAiAttack.push(this.recordfirstAiAttack[0]--);
+                  right = false;
+                  left = true;
+                  console.log(this.otherAiAttack);
+                }
+              } else if (left === true) {
+              }
+              console.log(randomIndex);
+            }
+
+            this.aiAimming(randomIndex, this.playerBoard);
+
             recordAiShot.add(randomIndex);
 
             const randomRow = this.getRow(randomIndex);
@@ -94,6 +133,33 @@ export class gameboard {
         }
       });
     });
+  }
+
+  aiAimming(firstIndex, playerBoard) {
+    const row = this.getRow(firstIndex);
+    const col = this.getCol(firstIndex);
+
+    if (playerBoard[row][col] !== 0 && playerBoard[row][col] !== -1) {
+      if (this.otherAiAttack.length < 1) {
+        this.otherAiAttack.push(firstIndex);
+      }
+
+      if (this.recordfirstAiAttack.length < 1) {
+        this.recordfirstAiAttack.push(firstIndex);
+      }
+
+      if (this.recordAttackedShip.length < 1) {
+        for (let i = 0; i < this.recordPlayerShip.length; i++) {
+          if (
+            this.playerBoard[row][col] === this.recordPlayerShip[i].shipLength
+          ) {
+            this.recordAttackedShip.push(this.recordPlayerShip[i]);
+          }
+        }
+      }
+    }
+
+    // console.log(this.recordfirstAiAttack.length);
   }
 
   //Create user interface
@@ -159,7 +225,7 @@ export class gameboard {
     shipListContainer.classList.add("shiplist-container");
     outerContainer.appendChild(shipListContainer);
 
-    this.populateShip(this.playerSubmarine, shipListContainer);
+    // this.populateShip(this.playerSubmarine, shipListContainer);
     this.populateShip(this.playerDestoryer, shipListContainer);
     this.populateShip(this.playerAircraftCarrier, shipListContainer);
     this.populateShip(this.playerCruiser, shipListContainer);
