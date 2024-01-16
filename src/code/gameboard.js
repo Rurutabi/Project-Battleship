@@ -24,6 +24,8 @@ export class gameboard {
   recordfirstAiAttack = [];
   otherAiAttack = [];
   recordAttackedShip = [];
+  right = true;
+  left = false;
 
   constructor(playerBoard, aiBoard) {
     this.playerBoard = this.createArrayboard(playerBoard);
@@ -81,28 +83,36 @@ export class gameboard {
             } else {
               // const row = this.getRow(randomIndex);
               // const col = this.getCol(randomIndex);
-              let right = true;
-              let left = false;
 
-              randomIndex = this.otherAiAttack.pop();
-              console.log(randomIndex);
-              if (right === true) {
+              if (this.right === true) {
+                randomIndex = this.otherAiAttack.pop();
                 randomIndex++;
                 if (
                   this.playerBoard[this.getRow(randomIndex)][
                     this.getCol(randomIndex)
                   ] === 0
                 ) {
-                  this.otherAiAttack.push(this.recordfirstAiAttack[0]--);
-                  right = false;
-                  left = true;
-                  console.log(this.otherAiAttack);
-                }
-              } else if (left === true) {
-              }
-              console.log(randomIndex);
-            }
+                  this.otherAiAttack.push(this.recordfirstAiAttack[0]);
 
+                  this.right = false;
+                  this.left = true;
+                }
+              } else if (this.left === true) {
+                console.log(this.recordAttackedShip);
+                if (this.recordAttackedShip[0].shipLength !== "sunken ship") {
+                  randomIndex = this.otherAiAttack.pop();
+
+                  randomIndex--;
+                } else {
+                  this.recordAttackedShip = [];
+                  this.otherAiAttack = [];
+                  this.recordfirstAiAttack = [];
+                  this.right = true;
+                  this.left = false;
+                }
+              }
+            }
+            // console.log(this.otherAiAttack.length);
             this.aiAimming(randomIndex, this.playerBoard);
 
             recordAiShot.add(randomIndex);
@@ -136,9 +146,10 @@ export class gameboard {
   }
 
   aiAimming(firstIndex, playerBoard) {
+    if (firstIndex === undefined) return;
     const row = this.getRow(firstIndex);
     const col = this.getCol(firstIndex);
-
+    console.log(firstIndex);
     if (playerBoard[row][col] !== 0 && playerBoard[row][col] !== -1) {
       if (this.otherAiAttack.length < 1) {
         this.otherAiAttack.push(firstIndex);
@@ -158,8 +169,6 @@ export class gameboard {
         }
       }
     }
-
-    // console.log(this.recordfirstAiAttack.length);
   }
 
   //Create user interface
