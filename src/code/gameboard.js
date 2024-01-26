@@ -21,6 +21,7 @@ export class gameboard {
   recordAiShip = [];
   recordAiShipLocation = [];
 
+  //Work in progress
   recordfirstAiAttack = [];
   otherAiAttack = [];
   recordAttackedShip = [];
@@ -79,35 +80,54 @@ export class gameboard {
                 recordAiShot.size < 100
               );
             } else {
-              if (this.right === true) {
-                randomIndex = this.otherAiAttack.pop();
-                randomIndex++;
-                if (
-                  this.playerBoard[this.getRow(randomIndex)][
-                    this.getCol(randomIndex)
-                  ] === 0
-                ) {
-                  this.otherAiAttack.push(this.recordfirstAiAttack[0]);
-                  this.right = false;
-                  this.left = true;
-                }
-              } else if (this.left === true) {
-                if (this.recordAttackedShip[0].shipLength !== "sunken ship") {
+              if (this.recordAttackedShip[0].shipLength !== "sunken ship") {
+                //Attack Right side first
+                if (this.right === true) {
                   randomIndex = this.otherAiAttack.pop();
+                  randomIndex++;
+
+                  console.log(Math.floor(randomIndex / 10));
+                  // Checking if the right side is hit
+                  if (recordAiShot.has(randomIndex)) {
+                    this.right = false;
+                    this.left = true;
+                    randomIndex = this.recordfirstAiAttack.pop();
+                    randomIndex--;
+                  }
+
+                  if (this.getCol(randomIndex) === 9) {
+                    this.right = false;
+                    this.left = true;
+                  }
+
+                  if (
+                    this.playerBoard[this.getRow(randomIndex)][
+                      this.getCol(randomIndex)
+                    ] === 0
+                  ) {
+                    // randomIndex = this.recordfirstAiAttack[0];
+                    // randomIndex--;
+                    this.right = false;
+                    this.left = true;
+                  }
+                  //Attack left
+                } else if (this.left === true) {
+                  randomIndex = this.recordfirstAiAttack.pop();
                   randomIndex--;
-                } else {
-                  this.recordAttackedShip = [];
-                  this.otherAiAttack = [];
-                  this.recordfirstAiAttack = [];
-                  this.right = true;
-                  this.left = false;
-                  do {
-                    randomIndex = Math.floor(Math.random() * 100);
-                  } while (
-                    recordAiShot.has(randomIndex) &&
-                    recordAiShot.size < 100
-                  );
                 }
+              } else {
+                //Go back to random number
+                this.recordAttackedShip.length = 0;
+                this.otherAiAttack.length = 0;
+                this.recordfirstAiAttack.length = 0;
+                this.right = true;
+                this.left = false;
+                do {
+                  randomIndex = Math.floor(Math.random() * 100);
+                } while (
+                  recordAiShot.has(randomIndex) &&
+                  recordAiShot.size < 100
+                );
               }
             }
             // console.log(this.otherAiAttack.length);
@@ -149,14 +169,17 @@ export class gameboard {
     const col = this.getCol(firstIndex);
 
     if (playerBoard[row][col] !== 0 && playerBoard[row][col] !== -1) {
+      //this attack will increase and decrease
       if (this.otherAiAttack.length < 1) {
         this.otherAiAttack.push(firstIndex);
       }
 
+      //Record first hit
       if (this.recordfirstAiAttack.length < 1) {
         this.recordfirstAiAttack.push(firstIndex);
       }
 
+      //ship that got hit
       if (this.recordAttackedShip.length < 1) {
         for (let i = 0; i < this.recordPlayerShip.length; i++) {
           if (
