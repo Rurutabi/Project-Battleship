@@ -86,7 +86,6 @@ export class gameboard {
                   randomIndex = this.otherAiAttack.pop();
                   randomIndex++;
 
-                  console.log(Math.floor(randomIndex / 10));
                   // Checking if the right side is hit
                   if (recordAiShot.has(randomIndex)) {
                     this.right = false;
