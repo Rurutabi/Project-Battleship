@@ -46,6 +46,9 @@ export class gameboard {
   handleTurnClick() {
     const aiCell = document.querySelectorAll(".ai-cell");
     const playerCell = document.querySelectorAll(".player-cell");
+    const restartContainer = document.querySelector('.restart-container')
+    const overlay = document.querySelector('.overlay')
+    const winnerText = document.querySelector('.winner-text')
     const recordAiShot = new Set();
     let checkWinner = false;
     aiCell.forEach((value, index) => {
@@ -150,10 +153,17 @@ export class gameboard {
             );
 
             if (this.playerWinCondition() === true) {
-              console.log("player Win");
+                 
+              restartContainer.classList.remove('hide')
+              overlay.classList.remove('hide')
+              restartContainer.style.display = 'flex'
+              winnerText.textContent = 'Player Win'
               checkWinner = true;
             } else if (this.aiWinCondition() === true) {
-              console.log("ai Win");
+              restartContainer.classList.remove('hide')
+              overlay.classList.remove('hide')
+              restartContainer.style.display = 'flex'
+              winnerText.textContent = 'Ai Win'
               checkWinner = true;
             }
           }
@@ -225,6 +235,31 @@ export class gameboard {
     const footerText = document.createElement("p");
     footerText.textContent = "Create by Siraphop Sompamit";
     outerContainer.appendChild(footer);
+
+    //Create overlay and restart button
+    const restartContainer = document.createElement('div')
+    restartContainer.classList.add('restart-container')
+    restartContainer.classList.add('hide')
+    restartContainer.classList.add('delay')
+    
+    document.body.appendChild(restartContainer)
+
+    const restartButton = document.createElement('button')
+    restartButton.classList.add('restart-button')
+  
+    restartButton.textContent = 'Restart'
+    restartContainer.appendChild(restartButton)
+
+    const winnerText = document.createElement('div')
+    winnerText.classList.add('winner-text')
+    winnerText.classList.add('delay')
+
+    const overlay = document.createElement('div')
+    overlay.classList.add('overlay')
+    overlay.classList.add('hide')
+    document.body.appendChild(overlay)
+ 
+    restartContainer.appendChild(winnerText)
 
     footer.appendChild(footerText);
     this.populateBoard(playerBoardContainer);
