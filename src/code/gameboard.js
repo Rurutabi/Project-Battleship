@@ -21,7 +21,7 @@ export class gameboard {
   recordAiShip = [];
   recordAiShipLocation = [];
 
-  //Work in progress
+  //Ai Attack
   recordfirstAiAttack = [];
   otherAiAttack = [];
   recordAttackedShip = [];
@@ -35,6 +35,30 @@ export class gameboard {
     this.createShip();
     this.dragShip();
     this.handleTurnClick();
+    this.restartGame();
+  }
+
+  restartGame(){
+    const restartButton = document.querySelector('.restart-button')
+    const restartContainer = document.querySelector('.restart-container')
+    const overlay = document.querySelector('.overlay')
+
+    restartButton.addEventListener('click' , (e) =>{
+      restartContainer.style.display = 'none'
+      overlay.classList.add('hide')
+      this.resetBoard(this.playerBoard)
+      this.resetBoard(this.aiBoard)
+      console.log(this.playerBoard)
+      console.log(this.aiBoard)
+    })
+  }
+
+  resetBoard(board){
+    board.forEach(element => {
+      for(let i = 0; i < element.length;i++){
+        element[i] = 0;
+      }
+    })
   }
 
   createArrayboard(playerBoard) {
@@ -59,7 +83,6 @@ export class gameboard {
             !value.classList.contains("red")
           ) {
             //PLayer Attack
-
             const playeyRow = this.getRow(index);
             const playerCol = this.getCol(index);
 
@@ -107,8 +130,6 @@ export class gameboard {
                       this.getCol(randomIndex)
                     ] === 0
                   ) {
-                    // randomIndex = this.recordfirstAiAttack[0];
-                    // randomIndex--;
                     this.right = false;
                     this.left = true;
                   }
@@ -153,7 +174,6 @@ export class gameboard {
             );
 
             if (this.playerWinCondition() === true) {
-                 
               restartContainer.classList.remove('hide')
               overlay.classList.remove('hide')
               restartContainer.style.display = 'flex'
@@ -239,7 +259,6 @@ export class gameboard {
     //Create overlay and restart button
     const restartContainer = document.createElement('div')
     restartContainer.classList.add('restart-container')
-    restartContainer.classList.add('hide')
     restartContainer.classList.add('delay')
     
     document.body.appendChild(restartContainer)
@@ -409,6 +428,8 @@ export class gameboard {
       });
     });
   }
+
+
 
   pushShipLengthToArray(
     firstIndex,

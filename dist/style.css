@@ -128,6 +128,7 @@ footer {
 
 
 .restart-container {
+  display:none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -157,7 +158,7 @@ footer {
   animation: fadeIn 1s;
 }
 
-button{
+.restart-button{
   width: 75px;
   height: 50px;
   background-color: #ffffff;
