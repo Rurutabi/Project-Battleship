@@ -66,6 +66,7 @@ export class gameboard {
       this.playerCruiser.shipLength = 5;
       this.playerAircraftCarrier.shipLength = 6;
 
+      //reset Ai Ship
       this.aiSubmarine.shipLength = 2;
       this.aiDestoryer.shipLength = 3;
       this.aiBattleShip.shipLength = 4;
