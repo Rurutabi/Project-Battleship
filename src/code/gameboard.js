@@ -38,27 +38,60 @@ export class gameboard {
     this.restartGame();
   }
 
-  restartGame(){
-    const restartButton = document.querySelector('.restart-button')
-    const restartContainer = document.querySelector('.restart-container')
-    const overlay = document.querySelector('.overlay')
+  restartGame() {
+    const restartButton = document.querySelector(".restart-button");
+    const restartContainer = document.querySelector(".restart-container");
+    const overlay = document.querySelector(".overlay");
 
-    restartButton.addEventListener('click' , (e) =>{
-      restartContainer.style.display = 'none'
-      overlay.classList.add('hide')
-      this.resetBoard(this.playerBoard)
-      this.resetBoard(this.aiBoard)
-      console.log(this.playerBoard)
-      console.log(this.aiBoard)
-    })
+    const aiCell = document.querySelectorAll(".ai-cell");
+    const playerCell = document.querySelectorAll(".player-cell");
+
+    restartButton.addEventListener("click", (e) => {
+      //Remove restart button when press
+      restartContainer.style.display = "none";
+      overlay.classList.add("hide");
+
+      //reset player and ai board to 0
+      this.resetBoard(this.playerBoard);
+      this.resetBoard(this.aiBoard);
+
+      //reset ui board
+      this.resetCell(aiCell);
+      this.resetCell(playerCell);
+
+      //reset Ship
+      this.playerSubmarine.shipLength = 2;
+      this.playerDestoryer.shipLength = 3;
+      this.playerBattleShip.shipLength = 4;
+      this.playerCruiser.shipLength = 5;
+      this.playerAircraftCarrier.shipLength = 6;
+
+      this.aiSubmarine.shipLength = 2;
+      this.aiDestoryer.shipLength = 3;
+      this.aiBattleShip.shipLength = 4;
+      this.aiCruiser.shipLength = 5;
+      this.aiAircraftCarrier.shipLength = 6;
+    });
   }
 
-  resetBoard(board){
-    board.forEach(element => {
-      for(let i = 0; i < element.length;i++){
+  resetCell(cell) {
+    cell.forEach((element) => {
+      element.classList.remove("red");
+      element.classList.remove("aquamarine");
+      element.classList.remove("goldenrod");
+      element.classList.remove("darkviolet");
+      element.classList.remove("midnightblue");
+      element.classList.remove("palevioletred");
+      element.classList.remove("chartreuse");
+    });
+  }
+
+  resetBoard(board) {
+    board.forEach((element) => {
+      for (let i = 0; i < element.length; i++) {
         element[i] = 0;
       }
-    })
+    });
   }
 
   createArrayboard(playerBoard) {
@@ -70,9 +103,9 @@ export class gameboard {
   handleTurnClick() {
     const aiCell = document.querySelectorAll(".ai-cell");
     const playerCell = document.querySelectorAll(".player-cell");
-    const restartContainer = document.querySelector('.restart-container')
-    const overlay = document.querySelector('.overlay')
-    const winnerText = document.querySelector('.winner-text')
+    const restartContainer = document.querySelector(".restart-container");
+    const overlay = document.querySelector(".overlay");
+    const winnerText = document.querySelector(".winner-text");
     const recordAiShot = new Set();
     let checkWinner = false;
     aiCell.forEach((value, index) => {
@@ -174,16 +207,16 @@ export class gameboard {
             );
 
             if (this.playerWinCondition() === true) {
-              restartContainer.classList.remove('hide')
-              overlay.classList.remove('hide')
-              restartContainer.style.display = 'flex'
-              winnerText.textContent = 'Player Win'
+              restartContainer.classList.remove("hide");
+              overlay.classList.remove("hide");
+              restartContainer.style.display = "flex";
+              winnerText.textContent = "Player Win";
               checkWinner = true;
             } else if (this.aiWinCondition() === true) {
-              restartContainer.classList.remove('hide')
-              overlay.classList.remove('hide')
-              restartContainer.style.display = 'flex'
-              winnerText.textContent = 'Ai Win'
+              restartContainer.classList.remove("hide");
+              overlay.classList.remove("hide");
+              restartContainer.style.display = "flex";
+              winnerText.textContent = "Ai Win";
               checkWinner = true;
             }
           }
@@ -257,28 +290,28 @@ export class gameboard {
     outerContainer.appendChild(footer);
 
     //Create overlay and restart button
-    const restartContainer = document.createElement('div')
-    restartContainer.classList.add('restart-container')
-    restartContainer.classList.add('delay')
-    
-    document.body.appendChild(restartContainer)
+    const restartContainer = document.createElement("div");
+    restartContainer.classList.add("restart-container");
+    restartContainer.classList.add("delay");
 
-    const restartButton = document.createElement('button')
-    restartButton.classList.add('restart-button')
-  
-    restartButton.textContent = 'Restart'
-    restartContainer.appendChild(restartButton)
+    document.body.appendChild(restartContainer);
 
-    const winnerText = document.createElement('div')
-    winnerText.classList.add('winner-text')
-    winnerText.classList.add('delay')
+    const restartButton = document.createElement("button");
+    restartButton.classList.add("restart-button");
 
-    const overlay = document.createElement('div')
-    overlay.classList.add('overlay')
-    overlay.classList.add('hide')
-    document.body.appendChild(overlay)
- 
-    restartContainer.appendChild(winnerText)
+    restartButton.textContent = "Restart";
+    restartContainer.appendChild(restartButton);
+
+    const winnerText = document.createElement("div");
+    winnerText.classList.add("winner-text");
+    winnerText.classList.add("delay");
+
+    const overlay = document.createElement("div");
+    overlay.classList.add("overlay");
+    overlay.classList.add("hide");
+    document.body.appendChild(overlay);
+
+    restartContainer.appendChild(winnerText);
 
     footer.appendChild(footerText);
     this.populateBoard(playerBoardContainer);
@@ -428,8 +461,6 @@ export class gameboard {
       });
     });
   }
-
-
 
   pushShipLengthToArray(
     firstIndex,
