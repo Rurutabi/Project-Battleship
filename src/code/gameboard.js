@@ -1,5 +1,5 @@
 import { Ship } from "../code/ship.js";
-//Testing commit
+
 export class gameboard {
   //Player Ship
   playerSubmarine = new Ship(2);
