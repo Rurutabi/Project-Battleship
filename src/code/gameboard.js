@@ -46,6 +46,9 @@ export class gameboard {
     const aiCell = document.querySelectorAll(".ai-cell");
     const playerCell = document.querySelectorAll(".player-cell");
 
+    const aiBoard = document.querySelector(".ai-board");
+    const shipListContainer = document.querySelector(".shiplist-container");
+
     restartButton.addEventListener("click", (e) => {
       //Remove restart button when press
       restartContainer.style.display = "none";
@@ -72,6 +75,35 @@ export class gameboard {
       this.aiBattleShip.shipLength = 4;
       this.aiCruiser.shipLength = 5;
       this.aiAircraftCarrier.shipLength = 6;
+
+      // //Record Ship and Location
+      this.recordPlayerShip = [];
+      this.recordPlayerShipLocation = [];
+      this.recordAiShip = [];
+      this.recordAiShipLocation = [];
+
+      // //Ai Attack
+      this.recordfirstAiAttack = [];
+      this.otherAiAttack = [];
+      this.recordAttackedShip = [];
+      this.right = true;
+      this.left = false;
+
+      //hide game board
+      aiBoard.classList.add("hide");
+
+      //Create ui Ship again
+      this.populateShip(this.playerSubmarine, shipListContainer);
+      this.populateShip(this.playerDestoryer, shipListContainer);
+      this.populateShip(this.playerAircraftCarrier, shipListContainer);
+      this.populateShip(this.playerCruiser, shipListContainer);
+      this.populateShip(this.playerBattleShip, shipListContainer);
+
+      this.recordAiShip.push(this.aiAircraftCarrier);
+      this.recordAiShip.push(this.aiBattleShip);
+      this.recordAiShip.push(this.aiCruiser);
+      this.recordAiShip.push(this.aiDestoryer);
+      this.recordAiShip.push(this.aiSubmarine);
     });
   }
 
