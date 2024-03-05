@@ -125,29 +125,25 @@ footer {
   background-color: red;
 }
 
-
-
 .restart-container {
-  display:none;
+  display: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   position: absolute;
-  gap:12px;
+  gap: 12px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
   z-index: 1;
- 
 }
 
-.winner-text{
+.winner-text {
   color: white;
   font-size: 1.8rem;
   font-weight: bold;
   z-index: 1;
-  
 }
 
 .hidden {
@@ -158,12 +154,12 @@ footer {
   animation: fadeIn 1s;
 }
 
-.restart-button{
+.restart-button {
   width: 75px;
   height: 50px;
   background-color: #ffffff;
   box-shadow: var(--shadow);
-  font-weight:bold;
+  font-weight: bold;
 }
 
 .overlay {
@@ -175,8 +171,6 @@ footer {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 0;
 }
-
-
 
 @keyframes fadeIn {
   from {

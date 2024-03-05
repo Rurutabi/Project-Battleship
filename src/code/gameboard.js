@@ -47,6 +47,7 @@ export class gameboard {
     const playerCell = document.querySelectorAll(".player-cell");
 
     const aiBoard = document.querySelector(".ai-board");
+
     const shipListContainer = document.querySelector(".shiplist-container");
 
     restartButton.addEventListener("click", (e) => {
@@ -93,6 +94,7 @@ export class gameboard {
       aiBoard.classList.add("hide");
 
       //Create ui Ship again
+
       this.populateShip(this.playerSubmarine, shipListContainer);
       this.populateShip(this.playerDestoryer, shipListContainer);
       this.populateShip(this.playerAircraftCarrier, shipListContainer);
@@ -116,6 +118,7 @@ export class gameboard {
       element.classList.remove("midnightblue");
       element.classList.remove("palevioletred");
       element.classList.remove("chartreuse");
+      element.classList.remove("placed");
     });
   }
 
@@ -161,7 +164,6 @@ export class gameboard {
             this.receiveAttack(index, this.aiBoard, this.recordAiShipLocation);
 
             //Ai Attack
-
             let randomIndex;
 
             if (this.recordAttackedShip.length === 0) {
@@ -178,17 +180,13 @@ export class gameboard {
                   randomIndex = this.otherAiAttack.pop();
                   randomIndex++;
 
+                  console.log("Random index number" + randomIndex);
                   // Checking if the right side is hit
                   if (recordAiShot.has(randomIndex)) {
                     this.right = false;
                     this.left = true;
                     randomIndex = this.recordfirstAiAttack.pop();
                     randomIndex--;
-                  }
-
-                  if (this.getCol(randomIndex) === 9) {
-                    this.right = false;
-                    this.left = true;
                   }
 
                   if (
@@ -219,8 +217,17 @@ export class gameboard {
                 );
               }
             }
-            // console.log(this.otherAiAttack.length);
+
             this.aiAimming(randomIndex, this.playerBoard);
+
+            //Start attacking left side if the right is in different column
+            if (
+              this.getCol(randomIndex) >= 9 &&
+              this.recordAttackedShip.length !== 0
+            ) {
+              this.right = false;
+              this.left = true;
+            }
 
             recordAiShot.add(randomIndex);
 
@@ -488,7 +495,7 @@ export class gameboard {
 
         //Ai board appear when user move every ships to player boards
         if (shipListContainer.childElementCount === 0) {
-          shipListContainer.remove();
+          shipListContainer.style.display = "none";
           aiBoardContainer.classList.remove("hide");
         }
       });
