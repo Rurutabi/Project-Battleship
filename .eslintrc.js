@@ -19,6 +19,11 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  rules: { "no-console": "off" },
-  "no-unused-vars": "off",
+  rules: {
+    "no-console": "off",
+    "import/prefer-default-export": "off",
+    "class-methods-use-this": "off",
+    "no-param-reassign": "off",
+    "consistent-return": "off",
+  },
 };

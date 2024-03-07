@@ -8,7 +8,7 @@ export class Ship {
   }
 
   hits() {
-    this.shipLength = this.shipLength - 1;
+    this.shipLength -= 1;
     this.isSunk();
   }
 

@@ -1,3 +1,4 @@
-import { gameboard } from "./gameboard.js";
+import { Gameboard } from "./gameboard";
 
-let board = new gameboard(10, 10);
+// eslint-disable-next-line no-unused-vars
+const board = new Gameboard(10, 10);
