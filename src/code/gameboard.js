@@ -120,7 +120,6 @@ export class Gameboard {
       });
 
       this.checkWinner = false;
-      console.log(this.checkWinner);
     });
   }
 
@@ -260,19 +259,17 @@ export class Gameboard {
               this.recordPlayerShipLocation
             );
 
-            // playerSubmarine = new Ship(2);
-            // playerDestoryer = new Ship(3);
-            // playerBattleShip = new Ship(4);
-            // playerCruiser = new Ship(5);
-            // playerAircraftCarrier = new Ship(6);
-
             if (this.playerWinCondition() === true) {
+              recordAiShot.clear();
+              console.log(recordAiShot);
               restartContainer.classList.remove("hide");
               overlay.classList.remove("hide");
               restartContainer.style.display = "flex";
               winnerText.textContent = "Player Win";
               this.checkWinner = true;
             } else if (this.aiWinCondition() === true) {
+              recordAiShot.clear();
+              console.log(recordAiShot);
               restartContainer.classList.remove("hide");
               overlay.classList.remove("hide");
               restartContainer.style.display = "flex";
@@ -485,7 +482,6 @@ export class Gameboard {
           }
           this.shipCounting -= 1;
 
-          console.log(firstIndex, shipCells);
           // Use recordShip and placeShip to place the ship on the actual array
           this.pushShipLengthToArray(
             firstIndex,
@@ -521,8 +517,6 @@ export class Gameboard {
           shipListContainer.style.display = "none";
           aiBoardContainer.classList.remove("hide");
         }
-
-        console.log(this.playerBoard);
       });
     });
   }
@@ -534,8 +528,6 @@ export class Gameboard {
     recordShip,
     recordLocation
   ) {
-    console.log(recordShip);
-    console.log(recordLocation);
     for (let i = 0; i < recordShip.length; i += 1) {
       if (recordShip[i].shipLength === shipCells.length) {
         this.placeShip(firstIndex, recordShip[i], board, recordLocation);
