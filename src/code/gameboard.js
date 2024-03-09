@@ -260,16 +260,16 @@ export class Gameboard {
             );
 
             if (this.playerWinCondition() === true) {
+              // Clear Ai record
               recordAiShot.clear();
-              console.log(recordAiShot);
               restartContainer.classList.remove("hide");
               overlay.classList.remove("hide");
               restartContainer.style.display = "flex";
               winnerText.textContent = "Player Win";
               this.checkWinner = true;
             } else if (this.aiWinCondition() === true) {
+              // Clear Ai record
               recordAiShot.clear();
-              console.log(recordAiShot);
               restartContainer.classList.remove("hide");
               overlay.classList.remove("hide");
               restartContainer.style.display = "flex";
