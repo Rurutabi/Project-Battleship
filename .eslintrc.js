@@ -25,5 +25,13 @@ module.exports = {
     "class-methods-use-this": "off",
     "no-param-reassign": "off",
     "consistent-return": "off",
+    overrides: [
+      {
+        files: ["*.spec.ts"],
+        rules: {
+          "jest/expect-expect": "off",
+        },
+      },
+    ],
   },
 };
